@@ -40,7 +40,7 @@ public partial class CafeContext : DbContext
     public virtual DbSet<Provider> Providers { get; set; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=ZHIGADLO-PC\\SQLEXPRESS;Database=Cafe;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        => optionsBuilder.UseSqlServer(DbConnection.Instance.GetConnectionString());
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
