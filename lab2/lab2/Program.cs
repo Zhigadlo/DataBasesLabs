@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using lab2.Entities;
+using ConsoleTables;
 
 using (CafeContext context = new CafeContext())
 {
@@ -30,13 +31,47 @@ using (CafeContext context = new CafeContext())
                     break;
                 //4. Выборку данных из двух полей двух таблиц, связанных между собой отношением «один-ко-многим» – 1 шт.
                 case 4:
-
+                    var employees = context.Employees.Join(context.Professions,
+                                                            x => x.ProfessionId,
+                                                            y => y.Id,
+                                                            (x, y) => new
+                                                            {
+                                                                Name = x.FirstName,
+                                                                LastName = x.LastName,
+                                                                MiddleName = x.MiddleName,
+                                                                Profession = y.Name
+                                                            });
+                    ListOutput(employees);
                     break;
+                //5. Выборку данных из двух таблиц, связанных между собой отношением «один-ко-многим» и отфильтрованным по некоторому условию, налагающему ограничения на значения одного или нескольких полей – 1 шт.
                 case 5:
-
+                    var ingridientsWarehouse = context.IngridientsWarehouses.Join(context.Providers,
+                                                                                  x => x.ProviderId,
+                                                                                  y => y.Id,
+                                                                                  (x, y) => new
+                                                                                  {
+                                                                                      IngridientId = x.IngridientId,
+                                                                                      Cost = x.Cost,
+                                                                                      Weight = x.Weight,
+                                                                                      ReleaseDate = x.ReleaseDate,
+                                                                                      StorageLife = x.StorageLife,
+                                                                                      Provider = y.Name
+                                                                                  }).Join(context.Ingridients,
+                                                                                          x => x.IngridientId,
+                                                                                          y => y.Id,
+                                                                                          (x, y) => new
+                                                                                          {
+                                                                                              IngridientName = y.Name,
+                                                                                              Cost = x.Cost,
+                                                                                              Weight = x.Weight,
+                                                                                              ReleaseDate = x.ReleaseDate,
+                                                                                              StorageLife = x.StorageLife,
+                                                                                              Provider = x.Provider
+                                                                                          }).Where(x => x.Cost > 400);
+                    ListOutput(ingridientsWarehouse);
                     break;
                 case 6:
-
+                    AddIngridient();
                     break;
                 case 7:
 
@@ -72,17 +107,40 @@ using (CafeContext context = new CafeContext())
         Console.WriteLine("1. Output ingridient list");
         Console.WriteLine("2. Output professions that more than 13 employees have");
         Console.WriteLine("3. Output count of people that use cash");
-        Console.WriteLine("4. ")
+        Console.WriteLine("4. Output all employees");
+        Console.WriteLine("5. Output all ingridients info in wahrehouses that costs more than 400");
+        Console.WriteLine("6. Add ingridient");
         Console.WriteLine("11. Exit");
     }
 
-    void ListOutput<T>(IEnumerable<T> list) where T: class
+    void ListOutput<T>(IEnumerable<T> dbset) where T: class
     {
-        int i = 1;
-        foreach(var item in list)
+        ConsoleTable table = new ConsoleTable(typeof(T).GetProperties().Where(x => !x.PropertyType.IsGenericType).Select(x => x.Name).ToArray());
+
+        foreach(var item in dbset)
         {
-            Console.WriteLine(i.ToString() + ". " + item.ToString());
-            i++;
+            table.AddRow(item.GetType().GetProperties().Where(x => !x.PropertyType.IsGenericType).Select(x => x.GetValue(item)).ToArray());
         }
+        table.Write();
+    }
+
+    void AddIngridient()
+    {
+        Console.Clear();
+        Console.WriteLine("Ingridient adding");
+        Console.Write("Enter name of new ingridient: ");
+        string? str = Console.ReadLine();
+        if (context.Ingridients.ToList().Exists(x => x.Name == str))
+        {
+            Console.WriteLine("Ingridient with such name is already exist");
+        }
+        else
+        {
+            Ingridient newIngridient = new Ingridient();
+            newIngridient.Name = str;
+            context.Ingridients.Add(newIngridient);
+            context.SaveChanges();
+            Console.WriteLine("Ingridient " + str + " is added:)");
+        } 
     }
 }

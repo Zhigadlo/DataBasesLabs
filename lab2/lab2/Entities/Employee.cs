@@ -26,6 +26,6 @@ public partial class Employee
     public override string ToString()
     {
         return "FirstName: " + FirstName + ",LastName: " + LastName + ", MiddleName: " + MiddleName +
-            ",Age: " + Age + ", Education: " + Education + ", Profession: " + Profession?.Name;
+            ",Age: " + Age + ", Education: " + Education;
     }
 }
