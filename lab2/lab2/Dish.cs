@@ -16,4 +16,9 @@ public partial class Dish
     public virtual ICollection<IngridientsDish> IngridientsDishes { get; } = new List<IngridientsDish>();
 
     public virtual ICollection<OrderDish> OrderDishes { get; } = new List<OrderDish>();
+
+    public override string ToString()
+    {
+        return "Name: " + Name + ", Cost: " + Cost + ",Cooking time: " + CookingTime;
+    }
 }

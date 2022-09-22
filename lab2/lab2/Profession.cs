@@ -9,5 +9,10 @@ public partial class Profession
 
     public string? Name { get; set; }
 
+    public override string ToString()
+    {
+        return Name;
+    }
+
     public virtual ICollection<Employee> Employees { get; } = new List<Employee>();
 }

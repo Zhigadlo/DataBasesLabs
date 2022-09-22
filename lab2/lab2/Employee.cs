@@ -22,4 +22,10 @@ public partial class Employee
     public virtual ICollection<Order> Orders { get; } = new List<Order>();
 
     public virtual Profession Profession { get; set; } = null!;
+
+    public override string ToString()
+    {
+        return "FirstName: " + FirstName + ",LastName: " + LastName + ", MiddleName: " + MiddleName + 
+            ",Age: " + Age + ", Education: " + Education + ", Profession: " + Profession.Name;
+    }
 }

@@ -9,6 +9,11 @@ public partial class Ingridient
 
     public string Name { get; set; } = null!;
 
+    public override string ToString()
+    {
+        return Name;
+    }
+
     public virtual ICollection<IngridientsDish> IngridientsDishes { get; } = new List<IngridientsDish>();
 
     public virtual ICollection<IngridientsWarehouse> IngridientsWarehouses { get; } = new List<IngridientsWarehouse>();

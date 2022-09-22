@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace lab2;
+﻿namespace lab2;
 
 public partial class Order
 {
@@ -20,6 +17,12 @@ public partial class Order
     public int EmployeeId { get; set; }
 
     public virtual Employee Employee { get; set; } = null!;
+
+    public override string ToString()
+    {
+        return "Date: " + OrderDate.ToShortDateString() + ", Customer: " + CustomerName + ", Customer phone: " +
+            CustomerPhoneNumber + ", PaymentMethod: " + PaymentMethod + ", Is complited: " + IsCompleted + ", Employee: " + Employee.LastName;
+    }
 
     public virtual ICollection<OrderDish> OrderDishes { get; } = new List<OrderDish>();
 }
