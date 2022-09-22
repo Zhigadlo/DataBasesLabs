@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lab2;
+namespace lab2.Entities;
 
 public partial class Employee
 {
@@ -25,7 +25,7 @@ public partial class Employee
 
     public override string ToString()
     {
-        return "FirstName: " + FirstName + ",LastName: " + LastName + ", MiddleName: " + MiddleName + 
-            ",Age: " + Age + ", Education: " + Education + ", Profession: " + Profession.Name;
+        return "FirstName: " + FirstName + ",LastName: " + LastName + ", MiddleName: " + MiddleName +
+            ",Age: " + Age + ", Education: " + Education + ", Profession: " + Profession?.Name;
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace lab2;
+namespace lab2.Entities;
 
 public partial class CafeContext : DbContext
 {

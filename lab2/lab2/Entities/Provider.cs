@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lab2;
+namespace lab2.Entities;
 
-public partial class Ingridient
+public partial class Provider
 {
     public int Id { get; set; }
 
@@ -13,8 +13,6 @@ public partial class Ingridient
     {
         return Name;
     }
-
-    public virtual ICollection<IngridientsDish> IngridientsDishes { get; } = new List<IngridientsDish>();
 
     public virtual ICollection<IngridientsWarehouse> IngridientsWarehouses { get; } = new List<IngridientsWarehouse>();
 }

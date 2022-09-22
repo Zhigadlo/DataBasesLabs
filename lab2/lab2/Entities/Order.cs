@@ -1,5 +1,4 @@
-﻿namespace lab2;
-
+﻿namespace lab2.Entities;
 public partial class Order
 {
     public int Id { get; set; }
@@ -21,7 +20,7 @@ public partial class Order
     public override string ToString()
     {
         return "Date: " + OrderDate.ToShortDateString() + ", Customer: " + CustomerName + ", Customer phone: " +
-            CustomerPhoneNumber + ", PaymentMethod: " + PaymentMethod + ", Is complited: " + IsCompleted + ", Employee: " + Employee.LastName;
+            CustomerPhoneNumber + ", PaymentMethod: " + PaymentMethod + ", Is complited: " + IsCompleted + ", EmployeeId: " + EmployeeId;
     }
 
     public virtual ICollection<OrderDish> OrderDishes { get; } = new List<OrderDish>();

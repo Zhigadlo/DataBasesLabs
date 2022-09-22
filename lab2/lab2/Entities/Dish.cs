@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace lab2;
+namespace lab2.Entities;
 
 public partial class Dish
 {
