@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using lab2.Entities;
 using ConsoleTables;
+using System.Globalization;
 
 using (CafeContext context = new CafeContext())
 {
@@ -9,7 +10,7 @@ using (CafeContext context = new CafeContext())
     {
         Menu();
         Console.Write("Enter menu number(int): ");
-        string? str = Console.ReadLine();
+        string str = Console.ReadLine() ?? string.Empty;
         try
         {
             int numOfMenu = int.Parse(str);
@@ -74,16 +75,16 @@ using (CafeContext context = new CafeContext())
                     AddIngridient();
                     break;
                 case 7:
-
+                    AddDish();
                     break;
                 case 8:
-
+                    RemoveIngridient();
                     break;
                 case 9:
-
+                    RemoveDish();
                     break;
                 case 10:
-
+                    UpdateEmployeeProfession();
                     break;
                 case 11:
                     isEnd = true;
@@ -104,20 +105,48 @@ using (CafeContext context = new CafeContext())
 
     void Menu()
     {
+        Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("1. Output ingridient list");
         Console.WriteLine("2. Output professions that more than 13 employees have");
         Console.WriteLine("3. Output count of people that use cash");
         Console.WriteLine("4. Output all employees");
         Console.WriteLine("5. Output all ingridients info in wahrehouses that costs more than 400");
         Console.WriteLine("6. Add ingridient");
+        Console.WriteLine("7. Add dish");
+        Console.WriteLine("8. Remove ingridient");
+        Console.WriteLine("9. Remove dish");
+        Console.WriteLine("10. Update employee profession");
         Console.WriteLine("11. Exit");
     }
 
-    void ListOutput<T>(IEnumerable<T> dbset) where T: class
+    void UpdateEmployeeProfession()
+    {
+        int id = InputIntValue("Enter employee id: ");
+        Employee? employee = context.Employees.FirstOrDefault(x => x.Id == id);
+        if (employee == null)
+            Console.WriteLine("There is no such employee");
+        else
+        {
+            Console.WriteLine(employee.ProfessionId + " " + employee.Profession);
+            id = InputIntValue("Enter new profession id: ");
+            Profession? profession = context.Professions.FirstOrDefault(x => x.Id == id);
+            if (profession == null)
+                Console.WriteLine("There is no such profession");
+            else
+            {
+                employee.Profession = profession;
+                employee.ProfessionId = id;
+                context.SaveChanges();
+                Console.WriteLine("Employee information is updated");
+            }
+        }
+    }
+
+    void ListOutput<T>(IEnumerable<T> list) where T: class
     {
         ConsoleTable table = new ConsoleTable(typeof(T).GetProperties().Where(x => !x.PropertyType.IsGenericType).Select(x => x.Name).ToArray());
 
-        foreach(var item in dbset)
+        foreach(var item in list)
         {
             table.AddRow(item.GetType().GetProperties().Where(x => !x.PropertyType.IsGenericType).Select(x => x.GetValue(item)).ToArray());
         }
@@ -129,7 +158,7 @@ using (CafeContext context = new CafeContext())
         Console.Clear();
         Console.WriteLine("Ingridient adding");
         Console.Write("Enter name of new ingridient: ");
-        string? str = Console.ReadLine();
+        string str = Console.ReadLine() ?? string.Empty;
         if (context.Ingridients.ToList().Exists(x => x.Name == str))
         {
             Console.WriteLine("Ingridient with such name is already exist");
@@ -142,5 +171,123 @@ using (CafeContext context = new CafeContext())
             context.SaveChanges();
             Console.WriteLine("Ingridient " + str + " is added:)");
         } 
+    }
+
+    void RemoveIngridient()
+    {
+        Console.WriteLine("Ingridient removing");
+        int id = InputIntValue("Enter ingridient id to remove: ");
+        Ingridient ingridient;
+        if(GetIngridientById(id, out ingridient))
+        {
+            context.Ingridients.Remove(ingridient);
+            Console.WriteLine(ingridient + " is deleted");
+            context.SaveChanges();  
+        }
+        else
+        {
+            Console.WriteLine("There is no ingridients with such id");
+        }
+    }
+
+    void RemoveDish()
+    {
+        Console.WriteLine("Dish deleting");
+        int id = InputIntValue("Enter dish id to remove: ");
+        Dish? dish = context.Dishes.FirstOrDefault(x => x.Id == id);
+        if (dish == null)
+            Console.WriteLine("There is no such dishes");
+        else
+        {
+            context.Dishes.Remove(dish);
+            context.SaveChanges();
+            Console.WriteLine("Dish " + dish.Name + " is deleted");
+        }
+    }
+
+    void AddDish()
+    {
+        Console.Clear();
+        Console.WriteLine("Dish adding");
+        Console.Write("Enter name of new dish: ");
+        string str = Console.ReadLine() ?? string.Empty; 
+        if (context.Dishes.ToList().Exists(x => x.Name == str))
+        {
+            Console.WriteLine("Dish with this name already exist");
+        }
+        else
+        {
+            Dish newDish = new Dish();
+            newDish.Name = str;
+            double cost = InputDoubleValue("Enter cost: ");
+            newDish.Cost = cost;
+            int time = InputIntValue("Enter time of cooking in minutes(int): ");
+            newDish.CookingTime = time;
+            int ingridientsCount = InputIntValue("Enter ingridients count(int): ");
+            context.Dishes.Add(newDish);
+            int i = 0;
+            while (i < ingridientsCount)
+            {
+                int id = InputIntValue("Enter " + i + "st ingridient id: ");
+                Ingridient ingridient;
+                if (GetIngridientById(id, out ingridient))
+                {
+                    IngridientsDish ingridientsDish = new IngridientsDish();
+                    ingridientsDish.IngridientId = id;
+                    ingridientsDish.Ingridient = ingridient;
+                    ingridientsDish.DishId = newDish.Id;
+                    ingridientsDish.IngridientWeight = InputIntValue("Input ingridient weight in gramns: ");
+                    context.IngridientsDishes.Add(ingridientsDish);
+                    i++;
+                }
+                else
+                {
+                    Console.WriteLine("There is no such ingridients. Try again.");
+                }    
+            }
+            context.SaveChanges();
+            Console.WriteLine("Dish " + newDish.Name + " is added:)");
+        }
+    }
+
+    bool GetIngridientById(int id, out Ingridient? ingridient)
+    {
+        ingridient = context.Ingridients.FirstOrDefault(x => x.Id == id);
+        if (ingridient == null)
+            return false;
+        else
+            return true;
+    }
+
+    double InputDoubleValue(string message)
+    {
+        Console.Write(message);
+        bool isEnd = false;
+        double value = 0;
+        while(!isEnd)
+        {
+            string str = Console.ReadLine() ?? string.Empty;
+            isEnd = double.TryParse(str, out value);
+            if(isEnd == false)
+                Console.WriteLine("You need to enter double number. Try again: ");
+        }
+
+        return value;
+    }
+
+    int InputIntValue(string message)
+    {
+        Console.Write(message);
+        bool isEnd = false;
+        int value = 0;
+        while (!isEnd)
+        {
+            string str = Console.ReadLine() ?? string.Empty;
+            isEnd = int.TryParse(str, out value);
+            if (isEnd == false)
+                Console.WriteLine("You need to enter int number. Try again: ");
+        }
+
+        return value;
     }
 }
