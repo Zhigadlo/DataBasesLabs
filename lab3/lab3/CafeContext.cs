@@ -20,11 +20,9 @@ public partial class CafeContext : DbContext
 
     public virtual DbSet<Employee> Employees { get; set; }
 
-    public virtual DbSet<EmployeeInformation> EmployeeInformations { get; set; }
 
     public virtual DbSet<Ingridient> Ingridients { get; set; }
 
-    public virtual DbSet<IngridientWarehousesInformation> IngridientWarehousesInformations { get; set; }
 
     public virtual DbSet<IngridientsDish> IngridientsDishes { get; set; }
 
@@ -77,28 +75,6 @@ public partial class CafeContext : DbContext
                 .HasConstraintName("FK_Employees_To_Professions");
         });
 
-        modelBuilder.Entity<EmployeeInformation>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("EmployeeInformations");
-
-            entity.Property(e => e.Education)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.LastName)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.MiddleName)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.Name)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-        });
 
         modelBuilder.Entity<Ingridient>(entity =>
         {
@@ -111,21 +87,6 @@ public partial class CafeContext : DbContext
                 .IsUnicode(false);
         });
 
-        modelBuilder.Entity<IngridientWarehousesInformation>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToView("IngridientWarehousesInformations");
-
-            entity.Property(e => e.Ingridient)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.Provider)
-                .HasMaxLength(20)
-                .IsUnicode(false);
-            entity.Property(e => e.ReleaseDate).HasColumnType("date");
-            entity.Property(e => e.StorageLife).HasColumnType("date");
-        });
 
         modelBuilder.Entity<IngridientsDish>(entity =>
         {
