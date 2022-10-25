@@ -15,7 +15,7 @@ namespace lab3.Cafe.Middleware
 
         public async Task InvokeAsync(HttpContext context, CafeContext dbcontext)
         {
-            if (context.Request.Path == "/searchDishes")
+            if (context.Request.Path == "/cookiesSearchDishes")
             {
                 string html = "<html><head>" +
                 "<Title>Dish search</Title></head>" +
@@ -24,33 +24,19 @@ namespace lab3.Cafe.Middleware
 
                 string name = "", ingridient = "";
                 if (context.Request.Query["searchname"].Count > 0)
-                {
                     name = context.Request.Query["searchname"];
-                }
                 else if (context.Request.Cookies.ContainsKey("name"))
-                {
                     name = context.Request.Cookies["name"];
-                }
                 else
-                {
                     context.Response.Cookies.Append("name", name);
-                }
 
                 if (context.Request.Query["searchingridient"].Count > 0)
-                {
                     ingridient = context.Request.Query["searchingridient"];
-                }
                 else if(context.Request.Cookies.ContainsKey("ingridient"))
-                {
                     ingridient = context.Request.Cookies["ingridient"];
-                }
                 else
-                {
                     context.Response.Cookies.Append("ingridient", ingridient);
-                }    
-
-                //string name = GetNameFromCookie(context);
-                //string ingridient = GetIngridientFromCookie(context);
+                
                 html += $"<form><h2>Dish name: </h2><input type='text' name='searchname' value='{name}'/><br/>";
 
 
@@ -59,13 +45,10 @@ namespace lab3.Cafe.Middleware
                 foreach (var i in dbcontext.Ingridients)
                 {
                     if(i.Name == ingridient)
-                    {
                         html += "<option value ='" + i.Name + "' selected>" + i.Name + "</option>";
-                    }
                     else
-                    {
                         html += "<option value ='" + i.Name + "'>" + i.Name + "</option>";
-                    }
+                    
                 }
 
                 html += "</select><br/>";
@@ -97,44 +80,6 @@ namespace lab3.Cafe.Middleware
             }
             await _next(context);
             
-        }
-
-        private string GetIngridientFromCookie(HttpContext context)
-        {
-            string ingridient;
-
-            if (context.Request.Cookies.ContainsKey("ingridient"))
-            {
-                ingridient = context.Request.Cookies["ingridient"];
-            }
-            else
-            {
-                ingridient = context.Request.Query["searchingridient"];
-            }
-
-            if (ingridient == null) ingridient = "";
-            context.Response.Cookies.Append("ingridient", ingridient);
-
-            return ingridient;
-        }
-
-        private string GetNameFromCookie(HttpContext context)
-        {
-            string name;
-
-            if (context.Request.Cookies.ContainsKey("name"))
-            {
-                name = context.Request.Cookies["name"];
-            }
-            else
-            {
-                name = context.Request.Query["searchname"];
-            }
-
-            if (name == null) name = "";
-            context.Response.Cookies.Append("name", name);
-
-            return name;
         }
     }
 }

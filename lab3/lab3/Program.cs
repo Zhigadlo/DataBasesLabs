@@ -9,11 +9,26 @@ string? connectionString = builder.Configuration.GetConnectionString("DefaultCon
 builder.Services.AddDbContext<CafeContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddTransient<CachedDishesService>();
 builder.Services.AddMemoryCache();
-
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 var app = builder.Build();
-app.UseRouting();
-app.Map("/", () => "Index\n");
-app.Map("/info", (context) => context.Response.WriteAsync($"<h1>User: {context.User}</h1>"));
+app.UseSession();
+app.Map("/", (context) => 
+{ 
+    string html = ""; 
+    html += "<h1><a href='/info'>User info</a></h1>";
+    html += "<h1><a href='/dishes'>Cached dishes list</a></h1>";
+    html += "<h1><a href='/cookiesSearchDishes'>Search form with cookies using</a></h1>";
+    html += "<h1><a href='/sessionSearchDishes'>Search form with session using</a></h1>";
+    return context.Response.WriteAsync(html);
+});
+app.Map("/info", (context) => 
+{
+    string html = "";
+    html += $"<h1>Browser: {context.Request.Headers["sec-ch-ua"]}</h1>";
+    html += $"<h1>Platform: {context.Request.Headers["sec-ch-ua-platform"]}</h1>";
+    return context.Response.WriteAsync(html); 
+});
 
 app.Map("/dishes", (context) =>
 {
@@ -39,4 +54,5 @@ app.Map("/dishes", (context) =>
 });
 
 app.UseMiddleware<CookieDishSearchMiddleware>();
+app.UseMiddleware<SessionDishSearchMiddleware>();
 app.Run();
