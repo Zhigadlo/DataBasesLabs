@@ -1,0 +1,32 @@
+﻿@using lab4.Cafe.Models
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model IEnumerable<Employee>
+<div>
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>MiddleName</th>
+            <th>Age</th>
+            <th>Education</th>
+            <th>Profession</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.MiddleName</td>
+                <td>@item.Age</td>
+                <td>@item.Education</td>
+                <td>@item.Profession.Name</td>
+            </tr>
+        }
+    </table>
+</div>
