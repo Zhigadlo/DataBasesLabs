@@ -5,7 +5,7 @@ namespace lab4.Middleware
     public class InitializeDataMiddleware
     {
         private readonly RequestDelegate _next;
-        
+
         public InitializeDataMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -64,11 +64,11 @@ namespace lab4.Middleware
 
         private void ProfessionInitialize(CafeContext dbcontext)
         {
-            if(!dbcontext.Professions.Any())
+            if (!dbcontext.Professions.Any())
             {
                 string[] names = new string[] { "cleaner", "manager", "cook", "cassier", "waiter" };
                 Profession[] professions = new Profession[names.Length];
-                for(int i = 0; i < professions.Length; i++)
+                for (int i = 0; i < professions.Length; i++)
                 {
                     var newProfession = new Profession();
                     newProfession.Name = names[i];
@@ -81,12 +81,12 @@ namespace lab4.Middleware
 
         private void EmployeesInitialize(CafeContext dbcontext)
         {
-            if(!dbcontext.Employees.Any())
+            if (!dbcontext.Employees.Any())
             {
                 Profession[] professions = dbcontext.Professions.ToArray();
                 Random rnd = new Random();
                 Employee[] employees = new Employee[20];
-                for(int i = 0; i < employees.Length; i++)
+                for (int i = 0; i < employees.Length; i++)
                 {
                     Employee newEmployee = new Employee();
                     newEmployee.Profession = professions[rnd.Next(0, professions.Length)];

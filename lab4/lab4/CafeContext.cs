@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using lab4.Cafe.Models;
-using lab4;
+﻿using lab4.Cafe.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace lab4;
@@ -10,10 +7,12 @@ public partial class CafeContext : DbContext
 {
     public CafeContext()
     {
+        Database.EnsureCreated();
     }
     public CafeContext(DbContextOptions<CafeContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
     public virtual DbSet<Dish> Dishes { get; set; }

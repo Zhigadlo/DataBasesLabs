@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace lab4.Cafe.Models;
+﻿namespace lab4.Cafe.Models;
 
 public partial class Provider
 {
