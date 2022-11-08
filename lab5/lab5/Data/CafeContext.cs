@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using lab5.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace lab5.Data
 {
-    public partial class CafeContext : DbContext
+    public partial class CafeContext : IdentityDbContext
     {
         public CafeContext()
         {
-            Database.EnsureCreated();
         }
 
         public CafeContext(DbContextOptions<CafeContext> options)
             : base(options)
         {
-            Database.EnsureCreated();
         }
 
         public virtual DbSet<Dish> Dishes { get; set; } = null!;
@@ -28,6 +27,7 @@ namespace lab5.Data
         public virtual DbSet<OrderDish> OrderDishes { get; set; } = null!;
         public virtual DbSet<Profession> Professions { get; set; } = null!;
         public virtual DbSet<Provider> Providers { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -160,9 +160,8 @@ namespace lab5.Data
                     .IsUnicode(false);
             });
 
-            OnModelCreatingPartial(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
