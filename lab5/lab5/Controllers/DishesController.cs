@@ -23,7 +23,7 @@ namespace lab5.Controllers
 
         public IActionResult Delete(int id)
         {
-            _context.Dishes.Remove(_context.Dishes.ToList().First(x => x.Id == id));
+            _context.Dishes.Remove(_context.Dishes.First(x => x.Id == id));
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
