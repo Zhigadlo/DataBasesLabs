@@ -26,7 +26,7 @@ namespace lab5.Controllers
 
         public IActionResult CreateView()
         {
-            return View();
+            return View("Create");
         }
         [HttpGet]
         [Route("Ingridients/Update/{id}")]

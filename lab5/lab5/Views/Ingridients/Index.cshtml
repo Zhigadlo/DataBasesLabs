@@ -17,8 +17,8 @@
             <tr>
                 <td>@item.Id</td>
                 <td>@item.Name</td>
-                <td>@Html.ActionLink("delete", "Delete", "Ingridients", new { id=item.Id }, null)</td>
                 <td>@Html.ActionLink("change", "Update", "Ingridients", new { id=item.Id })</td>
+                <td>@Html.ActionLink("delete", "Delete", "Ingridients", new { id=item.Id })</td>
             </tr>
         }
     </table>

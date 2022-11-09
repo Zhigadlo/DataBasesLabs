@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Dish list";
+}
+@using lab5.Data.Models
+@model IEnumerable<Dish>
+<div>
+    <h2>@Html.ActionLink("add new dish", "CreateView", "Dishes")</h2>
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Cooking time(minutes)</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Name</td>
+                <td>@item.Cost</td>
+                <td>@item.CookingTime</td>
+                <td>@Html.ActionLink("details", "Description", "Dishes", new { id=item.Id })</td>
+                <td>@Html.ActionLink("change", "Update", "Dishes", new { id=item.Id })</td>
+                <td>@Html.ActionLink("delete", "Delete", "Dishes", new { id=item.Id })</td>
+            </tr>
+        }
+    </table>
+</div>
+Footer
+© 2022 GitHub, Inc.
