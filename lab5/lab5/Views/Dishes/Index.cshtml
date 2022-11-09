@@ -1,8 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Dish list";
 }
+@using lab5.Models
 @using lab5.Data.Models
-@model IEnumerable<Dish>
+@model IndexViewModel<Dish>
 <div>
     <h2>@Html.ActionLink("add new dish", "CreateView", "Dishes")</h2>
     <table class="table">
@@ -15,7 +16,7 @@
             <th></th>
             <th></th>
         </tr>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Items)
         {
             <tr>
                 <td>@item.Id</td>
@@ -28,6 +29,24 @@
             </tr>
         }
     </table>
+    @if (Model.PageViewModel.HasPreviousPage)
+    {
+        <a asp-action="Index"
+           asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+           class="btn btn-outline-dark">
+            <i class="glyphicon glyphicon-chevron-left"></i>
+            Back
+        </a>
+    }
+    @if (Model.PageViewModel.HasNextPage)
+    {
+        <a asp-action="Index"
+           asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
+           class="btn btn-outline-dark">
+            Forward
+            <i class="glyphicon glyphicon-chevron-right"></i>
+        </a>
+    }
 </div>
 Footer
 © 2022 GitHub, Inc.

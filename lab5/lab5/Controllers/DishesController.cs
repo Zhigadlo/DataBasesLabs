@@ -2,6 +2,7 @@
 using lab5.Data.Models;
 using lab5.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace lab5.Controllers
@@ -15,10 +16,21 @@ namespace lab5.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var dishes = _context.Dishes.Include(x => x.IngridientsDishes);
-            return View(dishes);
+            IQueryable<Dish> dishes = _context.Dishes.Include(x => x.IngridientsDishes);
+
+            int pageSize = 10;
+            int count = dishes.Count();
+            IEnumerable<Dish> items = dishes.Skip((page - 1) * pageSize).Take(pageSize);
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            IndexViewModel<Dish> viewModel = new IndexViewModel<Dish>
+            {
+                PageViewModel = pageViewModel,
+                Items = items
+            };
+            return View(viewModel);
         }
 
         public IActionResult Delete(int id)

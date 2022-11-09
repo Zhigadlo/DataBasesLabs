@@ -3,6 +3,7 @@ using lab5.Data.Models;
 using lab5.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
 
 namespace lab5.Controllers
 {
@@ -15,10 +16,21 @@ namespace lab5.Controllers
             _context = cafeContext;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var employees = _context.Employees.Include(x => x.Profession);
-            return View(employees);
+            IQueryable<Employee> employees = _context.Employees.Include(x => x.Profession);
+
+            int pageSize = 10;
+            int count = employees.Count();
+            IEnumerable<Employee> items = employees.Skip((page - 1) * pageSize).Take(pageSize);
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            IndexViewModel<Employee> viewModel = new IndexViewModel<Employee>
+            {
+                PageViewModel = pageViewModel,
+                Items = items
+            };
+            return View(viewModel);
         }
 
         public IActionResult CreateView()
@@ -59,7 +71,5 @@ namespace lab5.Controllers
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
-
-        
     }
 }

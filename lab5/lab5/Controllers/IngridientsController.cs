@@ -1,5 +1,6 @@
 ﻿using lab5.Data;
 using lab5.Data.Models;
+using lab5.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace lab5.Controllers
@@ -12,9 +13,21 @@ namespace lab5.Controllers
             _context = context;
         }
         
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            return View(_context.Ingridients);
+            IQueryable<Ingridient> ingridients = _context.Ingridients;
+
+            int pageSize = 10;
+            int count = ingridients.Count();
+            IEnumerable<Ingridient> items = ingridients.Skip((page - 1) * pageSize).Take(pageSize);
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            IndexViewModel<Ingridient> viewModel = new IndexViewModel<Ingridient>
+            {
+                PageViewModel = pageViewModel,
+                Items = items
+            };
+            return View(viewModel);
         }
 
         public IActionResult Delete(int id)
