@@ -1,4 +1,5 @@
 using lab5.Data;
+using lab5.Middleware;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,6 +36,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<InitializeDataMiddleware>();
 
 app.MapControllerRoute(
     name: "default",

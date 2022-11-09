@@ -11,11 +11,13 @@ namespace lab5.Data
     {
         public CafeContext()
         {
+            Database.EnsureCreated();
         }
 
         public CafeContext(DbContextOptions<CafeContext> options)
             : base(options)
         {
+            Database.EnsureCreated();
         }
 
         public virtual DbSet<Dish> Dishes { get; set; } = null!;
