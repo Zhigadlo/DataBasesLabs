@@ -1,5 +1,5 @@
-﻿using lab5.Data.Models;
-using lab5.Data;
+﻿using lab5.Data;
+using lab5.Data.Models;
 
 namespace lab5.Middleware
 {

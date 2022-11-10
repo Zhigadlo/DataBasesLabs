@@ -1,6 +1,7 @@
 ﻿using lab5.Data;
 using lab5.Data.Models;
 using lab5.Models;
+using lab5.Models.IngridientViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace lab5.Controllers
@@ -12,20 +13,44 @@ namespace lab5.Controllers
         {
             _context = context;
         }
-        
-        public IActionResult Index(int page = 1)
+
+        public IActionResult Index(int? ingridient, string name, int page = 1,
+                                    IngridientSortState sortOrder = IngridientSortState.NameAsc)
         {
             IQueryable<Ingridient> ingridients = _context.Ingridients;
+
+            if (ingridient != 0 && ingridient != null)
+            {
+                ingridients = ingridients.Where(x => x.Id == ingridient);
+            }
+            if (!String.IsNullOrEmpty(name))
+            {
+                ingridients = ingridients.Where(x => x.Name.Contains(name));
+            }
+
+            switch (sortOrder)
+            {
+                case IngridientSortState.NameDesc:
+                    ingridients = ingridients.OrderByDescending(i => i.Name);
+                    break;
+                default:
+                    ingridients = ingridients.OrderBy(i => i.Name);
+                    break;
+            }
+
+            ingridients.OrderBy(x => x.Name);
 
             int pageSize = 10;
             int count = ingridients.Count();
             IEnumerable<Ingridient> items = ingridients.Skip((page - 1) * pageSize).Take(pageSize);
 
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            IndexViewModel<Ingridient> viewModel = new IndexViewModel<Ingridient>
+            IngridientIndexViewModel viewModel = new IngridientIndexViewModel
             {
                 PageViewModel = pageViewModel,
-                Items = items
+                Items = items,
+                FilterViewModel = new FilterIngridientViewModel(_context.Ingridients.ToList(), ingridient, name),
+                SortViewModel = new SortIngridientViewModel(sortOrder)
             };
             return View(viewModel);
         }

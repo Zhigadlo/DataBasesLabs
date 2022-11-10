@@ -2,16 +2,23 @@
     ViewData["Title"] = "Dish list";
 }
 @using lab5.Models
-@using lab5.Data.Models
-@model IndexViewModel<Dish>
+@using lab5.Models.DishViewModels
+@model DishIndexViewModel
 <div>
     <h2>@Html.ActionLink("add new dish", "CreateView", "Dishes")</h2>
+    <form method="get">
+        <label>Name: </label>
+        <input name="name" value="@Model.FilterViewModel.SelectedName"/>
+        <input type="submit" value="Filter" class="btn btn-outline-dark" />
+    </form>
     <table class="table">
         <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Cost</th>
-            <th>Cooking time(minutes)</th>
+            <th>@Html.ActionLink("Name", "Index", "Dishes", new { name=Model.FilterViewModel.SelectedName,
+                                                                  sortOrder=Model.SortViewModel.NameState})</th>
+            <th>@Html.ActionLink("Cost", "Index", "Dishes", new { name=Model.FilterViewModel.SelectedName,
+                                                                  sortOrder=Model.SortViewModel.CostState})</th>
+            <th>@Html.ActionLink("Cooking time(minutes)", "Index", "Dishes", new { name=Model.FilterViewModel.SelectedName,
+                                                                  sortOrder=Model.SortViewModel.CookingTimeState})</th>
             <th></th>
             <th></th>
             <th></th>
@@ -19,7 +26,6 @@
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@item.Id</td>
                 <td>@item.Name</td>
                 <td>@item.Cost</td>
                 <td>@item.CookingTime</td>

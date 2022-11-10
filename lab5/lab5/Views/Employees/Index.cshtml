@@ -1,26 +1,80 @@
 ﻿@{
     ViewData["Title"] = "Employee list";
 }
-@using lab5.Data.Models
-@model IndexViewModel<Employee>
+@using lab5.Models.EmployeeViewModels
+@model EmployeeIndexViewModel
 <div>
     <h2>@Html.ActionLink("add new employee", "CreateView", "Employees")</h2>
+    <form method="get">
+        <label>First name: </label>
+        <input name="firstName" value="@Model.FilterViewModel.SelectedFirstName" />
+
+        <label>Last name: </label>
+        <input name="lastName" value="@Model.FilterViewModel.SelectedLastName" />
+
+        <label>Middle name: </label>
+        <input name="middleName" value="@Model.FilterViewModel.SelectedMiddleName" />
+        
+        <label>Professions: </label>
+        <select name="profession" asp-items="Model.FilterViewModel.Professions"></select>
+        <input type="submit" value="Filter" class="btn btn-outline-dark" />
+    </form>
     <table class="table">
         <tr>
-            <th>Id</th>
-            <th>First name</th>
-            <th>Last name</th>
-            <th>Middle name</th>
-            <th>Age</th>
-            <th>Education</th>
-            <th>Profession</th>
+            <th>
+                @Html.ActionLink("First name", "Index", "Employyes", new {
+                    sortOrder = @Model.SortViewModel.FirstNameState,
+                    firstName = Model.FilterViewModel.SelectedFirstName,
+                    lastName = Model.FilterViewModel.SelectedLastName,
+                    middleName = Model.FilterViewModel.SelectedMiddleName,
+                    profession = Model.FilterViewModel.SelectedProfession })
+            </th>
+            <th>
+                @Html.ActionLink("Last name", "Index", "Employyes", new {
+                    sortOrder = @Model.SortViewModel.LastNameState,
+                    firstName = Model.FilterViewModel.SelectedFirstName,
+                    lastName = Model.FilterViewModel.SelectedLastName,
+                    middleName = Model.FilterViewModel.SelectedMiddleName,
+                    profession = Model.FilterViewModel.SelectedProfession })
+            </th>
+            <th>
+                @Html.ActionLink("Middle name", "Index", "Employyes", new {
+                    sortOrder = @Model.SortViewModel.MiddleNameState,
+                    firstName = Model.FilterViewModel.SelectedFirstName,
+                    lastName = Model.FilterViewModel.SelectedLastName,
+                    middleName = Model.FilterViewModel.SelectedMiddleName,
+                    profession = Model.FilterViewModel.SelectedProfession })
+            </th>
+            <th>
+                @Html.ActionLink("Age", "Index", "Employyes", new {
+                    sortOrder = @Model.SortViewModel.AgeState,
+                    firstName = Model.FilterViewModel.SelectedFirstName,
+                    lastName = Model.FilterViewModel.SelectedLastName,
+                    middleName = Model.FilterViewModel.SelectedMiddleName,
+                    profession = Model.FilterViewModel.SelectedProfession })
+            </th>
+            <th>
+                @Html.ActionLink("Education", "Index", "Employyes", new {
+                    sortOrder = @Model.SortViewModel.EducationState,
+                    firstName = Model.FilterViewModel.SelectedFirstName,
+                    lastName = Model.FilterViewModel.SelectedLastName,
+                    middleName = Model.FilterViewModel.SelectedMiddleName,
+                    profession = Model.FilterViewModel.SelectedProfession })
+            </th>
+            <th>
+                @Html.ActionLink("Profession", "Index", "Employyes", new {
+                    sortOrder = @Model.SortViewModel.ProfessionState,
+                    firstName = Model.FilterViewModel.SelectedFirstName,
+                    lastName = Model.FilterViewModel.SelectedLastName,
+                    middleName = Model.FilterViewModel.SelectedMiddleName,
+                    profession = Model.FilterViewModel.SelectedProfession })
+            </th>
             <th></th>
             <th></th>
         </tr>
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@item.Id</td>
                 <td>@item.FirstName</td>
                 <td>@item.LastName</td>
                 <td>@item.MiddleName</td>

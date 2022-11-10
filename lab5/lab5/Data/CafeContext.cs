@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using lab5.Data.Models;
+﻿using lab5.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace lab5.Data
 {

@@ -1,8 +1,8 @@
 ﻿using lab5.Data;
 using lab5.Data.Models;
 using lab5.Models;
+using lab5.Models.DishViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace lab5.Controllers
@@ -16,19 +16,48 @@ namespace lab5.Controllers
             _context = context;
         }
 
-        public IActionResult Index(int page = 1)
+        public IActionResult Index(string name, int page = 1, DishSortState sortOrder = DishSortState.NameAsc)
         {
             IQueryable<Dish> dishes = _context.Dishes.Include(x => x.IngridientsDishes);
+
+            if(!String.IsNullOrEmpty(name))
+            {
+                dishes = dishes.Where(x => x.Name.Contains(name));
+            }
+            
+            switch(sortOrder)
+            {
+                case DishSortState.CostAsc:
+                    dishes = dishes.OrderBy(d => d.Cost);
+                    break;
+                case DishSortState.CostDesc:
+                    dishes = dishes.OrderByDescending(d => d.Cost);
+                    break;
+                case DishSortState.CookingTimeAsc:
+                    dishes = dishes.OrderBy(d => d.CookingTime);
+                    break;
+                case DishSortState.CookingTimeDesc:
+                    dishes = dishes.OrderByDescending(d => d.CookingTime);
+                    break;
+                case DishSortState.NameDesc:
+                    dishes = dishes.OrderByDescending(d => d.Name);
+                    break;
+                default:
+                    dishes = dishes.OrderBy(d => d.Name);
+                    break;
+            }
 
             int pageSize = 10;
             int count = dishes.Count();
             IEnumerable<Dish> items = dishes.Skip((page - 1) * pageSize).Take(pageSize);
 
             PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
-            IndexViewModel<Dish> viewModel = new IndexViewModel<Dish>
+            DishIndexViewModel viewModel = new DishIndexViewModel
             {
                 PageViewModel = pageViewModel,
-                Items = items
+                Items = items,
+                SortViewModel = new SortDishViewModel(sortOrder),
+                FilterViewModel = new FilterDishViewModel(name)
             };
             return View(viewModel);
         }
@@ -65,7 +94,7 @@ namespace lab5.Controllers
             _context.Dishes.Add(newDish);
             _context.SaveChanges();
             Dish dish = _context.Dishes.First(x => x.Name == name);
-            for(int i = 0; i < ingridientIds.Length; i++)
+            for (int i = 0; i < ingridientIds.Length; i++)
             {
                 var ingridientDish = new IngridientsDish();
                 ingridientDish.Dish = dish;
