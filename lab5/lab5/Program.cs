@@ -9,10 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CafeContext>(options =>
     options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ApplicationContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("UsersConnection")));
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<CafeContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationContext>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -32,12 +35,13 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseMiddleware<InitializeDataMiddleware>();
+
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseMiddleware<InitializeDataMiddleware>();
 
 app.MapControllerRoute(
     name: "default",

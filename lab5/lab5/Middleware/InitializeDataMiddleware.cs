@@ -1,23 +1,25 @@
 ﻿using lab5.Data;
 using lab5.Data.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace lab5.Middleware
 {
     public class InitializeDataMiddleware
     {
         private readonly RequestDelegate _next;
-
+        
         public InitializeDataMiddleware(RequestDelegate next)
         {
             _next = next;
         }
 
-        public Task Invoke(HttpContext httpContext, CafeContext dbcontext)
+        public Task Invoke(HttpContext httpContext, CafeContext dbcontext, RoleManager<IdentityRole> roleManager)
         {
             IngridientsInitialize(dbcontext);
             DishesInitialize(dbcontext);
             ProfessionInitialize(dbcontext);
             EmployeesInitialize(dbcontext);
+            UserRolesInitialize(httpContext).Wait(); 
             return _next(httpContext);
         }
 
@@ -38,7 +40,6 @@ namespace lab5.Middleware
                 dbcontext.SaveChanges();
             }
         }
-
         private void DishesInitialize(CafeContext dbcontext)
         {
             if (!dbcontext.Dishes.Any())
@@ -61,7 +62,6 @@ namespace lab5.Middleware
             }
 
         }
-
         private void ProfessionInitialize(CafeContext dbcontext)
         {
             if (!dbcontext.Professions.Any())
@@ -78,7 +78,6 @@ namespace lab5.Middleware
                 dbcontext.SaveChanges();
             }
         }
-
         private void EmployeesInitialize(CafeContext dbcontext)
         {
             if (!dbcontext.Employees.Any())
@@ -99,6 +98,53 @@ namespace lab5.Middleware
                 }
                 dbcontext.AddRange(employees);
                 dbcontext.SaveChanges();
+            }
+        }
+        private async Task UserRolesInitialize(HttpContext context)
+        {
+            UserManager<IdentityUser> userManager = context.RequestServices.GetRequiredService<UserManager<IdentityUser>>();
+            RoleManager<IdentityRole> roleManager = context.RequestServices.GetRequiredService<RoleManager<IdentityRole>>();
+            string adminEmail = "admin@gmail.com";
+            string adminName = adminEmail;
+
+            string userEmail = "user@gmail.com";
+            string userName = userEmail;
+
+            string adminPassword = "Admin1234_";
+            string userPassword = "User1234_";
+            if (await roleManager.FindByNameAsync("admin") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("admin"));
+            }
+            if (await roleManager.FindByNameAsync("user") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("user"));
+            }
+            if (await userManager.FindByNameAsync(adminEmail) == null)
+            {
+                IdentityUser admin = new IdentityUser
+                {
+                    Email = adminEmail,
+                    UserName = adminName
+                };
+                IdentityResult result = await userManager.CreateAsync(admin, adminPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "admin");
+                }
+            }
+            if (await userManager.FindByNameAsync(userEmail) == null)
+            {
+                IdentityUser user = new IdentityUser
+                {
+                    Email = userEmail,
+                    UserName = userName
+                };
+                IdentityResult result = await userManager.CreateAsync(user, userPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "user");
+                }
             }
         }
     }

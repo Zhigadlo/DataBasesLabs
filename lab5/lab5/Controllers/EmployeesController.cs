@@ -2,24 +2,33 @@
 using lab5.Data.Models;
 using lab5.Models;
 using lab5.Models.EmployeeViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Data;
 
 namespace lab5.Controllers
 {
-    public class EmployeesController : Controller
+    public class EmployeesController : BaseController
     {
         private CafeContext _context;
-
-        public EmployeesController(CafeContext cafeContext)
+        private const string _key = "employees";
+        public EmployeesController(CafeContext cafeContext, IMemoryCache cache) : base(cache)
         {
             _context = cafeContext;
         }
-
+        [Authorize]
         public IActionResult Index(string firstName, string lastName, string middleName, int? profession,
                                     int page = 1, EmployeeSortState sortOrder = EmployeeSortState.AgeAsc)
         {
-            IQueryable<Employee> employees = _context.Employees.Include(x => x.Profession);
+            IQueryable<Employee> employees;
+            if(!_cache.TryGetValue(_key, out employees))
+            {
+                employees = _context.Employees.Include(x => x.Profession);
+                _cache.Set(_key, employees.ToList());
+            }
+
             if (profession != 0 && profession != null)
             {
                 employees = employees.Where(x => x.Profession.Id == profession);
@@ -93,13 +102,14 @@ namespace lab5.Controllers
 
             return View(viewModel);
         }
-
+        [Authorize(Roles = "admin")]
         public IActionResult CreateView()
         {
             return View("Create", _context.Professions);
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         [Route("Employees/Update/{id}")]
         public IActionResult UpdateView(int id)
         {
@@ -109,6 +119,7 @@ namespace lab5.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [Route("Employees/Update/{id}")]
         public IActionResult Update(int id, Employee employee, string profession)
         {
@@ -116,20 +127,26 @@ namespace lab5.Controllers
             employee.Profession = _context.Professions.First(x => x.Name == profession);
             _context.Employees.Update(employee);
             _context.SaveChanges();
+            CacheClear();
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "admin")]
         public IActionResult Delete(int id)
         {
             _context.Employees.Remove(_context.Employees.First(x => x.Id == id));
             _context.SaveChanges();
+            CacheClear();
             return RedirectToAction("Index");
         }
+
+        [Authorize(Roles = "admin")]
         public IActionResult Create(Employee employee, string profession)
         {
             employee.Profession = _context.Professions.First(x => x.Name == profession);
             _context.Employees.Add(employee);
             _context.SaveChanges();
+            CacheClear();
             return RedirectToAction("Index");
         }
     }

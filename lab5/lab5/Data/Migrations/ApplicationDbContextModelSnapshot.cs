@@ -7,7 +7,7 @@ using System;
 
 namespace lab5.Data.Migrations
 {
-    [DbContext(typeof(CafeContext))]
+    [DbContext(typeof(ApplicationContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

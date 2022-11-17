@@ -2,23 +2,31 @@
 using lab5.Data.Models;
 using lab5.Models;
 using lab5.Models.DishViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Data;
 
 namespace lab5.Controllers
 {
-    public class DishesController : Controller
+    public class DishesController : BaseController
     {
         private CafeContext _context;
-
-        public DishesController(CafeContext context)
+        private const string _key = "dishes";
+        public DishesController(CafeContext context, IMemoryCache cache) : base(cache)
         {
             _context = context;
         }
-
+        [Authorize(Roles = "admin,user")]
         public IActionResult Index(string name, int page = 1, DishSortState sortOrder = DishSortState.NameAsc)
         {
-            IQueryable<Dish> dishes = _context.Dishes.Include(x => x.IngridientsDishes);
+            IQueryable<Dish> dishes;
+            if(!_cache.TryGetValue(_key, out dishes))
+            {
+                dishes = _context.Dishes.Include(x => x.IngridientsDishes);
+                _cache.Set(_key, dishes.ToList());
+            }
 
             if(!String.IsNullOrEmpty(name))
             {
@@ -61,20 +69,22 @@ namespace lab5.Controllers
             };
             return View(viewModel);
         }
-
+        [Authorize(Roles = "admin")]
         public IActionResult Delete(int id)
         {
+            CacheClear();
             _context.Dishes.Remove(_context.Dishes.First(x => x.Id == id));
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = "admin")]
         public IActionResult CreateView()
         {
             return View("Create", _context.Ingridients.ToList());
         }
 
         [HttpGet]
+        [Authorize(Roles = "admin")]
         [Route("Dishes/Update/{id}")]
         public IActionResult UpdateView(int id)
         {
@@ -84,7 +94,7 @@ namespace lab5.Controllers
             DishUpdateViewModel viewModel = new DishUpdateViewModel(dish, dish.IngridientsDishes, ingridients);
             return View("Update", viewModel);
         }
-
+        [Authorize(Roles = "admin")]
         public IActionResult Create(string name, int cost, int cookingTime, int[] ingridientIds, int[] weights)
         {
             var newDish = new Dish();
@@ -103,15 +113,17 @@ namespace lab5.Controllers
                 _context.IngridientsDishes.Add(ingridientDish);
             }
             _context.SaveChanges();
+            CacheClear();
             return RedirectToAction("Index");
         }
-
+        [Authorize(Roles = "admin,user")]
         public IActionResult Description(int id)
         {
             return View(GetDishById(id));
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [Route("Dishes/Update/{id}")]
         public IActionResult Update(int id, string name, int cost, int cookingTime, int[] ingridientIds, int[] weights)
         {
@@ -140,6 +152,7 @@ namespace lab5.Controllers
             }
             _context.Dishes.Update(dishForUpdate);
             _context.SaveChanges();
+            CacheClear();
             return RedirectToAction("Index");
         }
 

@@ -1,10 +1,11 @@
 ﻿using lab5.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace lab5.Data
 {
-    public partial class CafeContext : IdentityDbContext
+    public partial class CafeContext : IdentityDbContext<IdentityUser>
     {
         public CafeContext()
         {
