@@ -41,5 +41,25 @@ namespace lab5.Controllers
                 }
             }
         }
+
+        protected string GetStringFromSession(string key, string value = null, string defaultValue = "")
+        {
+            if (value != null)
+            {
+                HttpContext.Session.SetString(key, value);
+                return value;
+            }
+            else if (HttpContext.Session.GetString(key) != null)
+            {
+                value = HttpContext.Session?.GetString(key);
+                HttpContext.Session.SetString(key, value);
+                return value;
+            }
+            else
+            {
+                HttpContext.Session.SetString(key, defaultValue);
+                return defaultValue;
+            }
+        }
     }
 }
