@@ -8,6 +8,7 @@ namespace lab5.Data
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
+            
         }
     }
 }

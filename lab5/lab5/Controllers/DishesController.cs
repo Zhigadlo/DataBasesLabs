@@ -18,7 +18,7 @@ namespace lab5.Controllers
         {
             _context = context;
         }
-        [Authorize(Roles = "admin,user")]
+        [Authorize(Roles="admin,user")]
         public IActionResult Index(string name, int page = 1, DishSortState sortOrder = DishSortState.NameAsc)
         {
             IQueryable<Dish> dishes;
@@ -28,10 +28,9 @@ namespace lab5.Controllers
                 _cache.Set(_key, dishes.ToList());
             }
 
-            if(!String.IsNullOrEmpty(name))
-            {
-                dishes = dishes.Where(x => x.Name.Contains(name));
-            }
+            name = GetStringFromSession("dishname", name);
+            dishes = dishes.Where(x => x.Name.Contains(name));
+            
             
             switch(sortOrder)
             {

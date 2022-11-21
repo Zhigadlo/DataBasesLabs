@@ -17,9 +17,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationContext>();
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddSession();
 var app = builder.Build();
-
+app.UseSession();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -42,10 +42,9 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Dishes}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

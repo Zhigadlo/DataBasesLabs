@@ -29,22 +29,28 @@ namespace lab5.Controllers
                 _cache.Set(_key, employees.ToList());
             }
 
-            if (profession != 0 && profession != null)
+            if (profession != null)
             {
+                HttpContext.Session.SetInt32("employeeprofession", (int)profession);
+            }
+            else
+            {
+                profession = HttpContext.Session.Keys.Contains("employeeprofession")
+                           ? HttpContext.Session.GetInt32("employeeprofession") : -1;
+            }
+            if (profession != -1)
                 employees = employees.Where(x => x.Profession.Id == profession);
-            }
-            if (!String.IsNullOrEmpty(firstName))
-            {
-                employees = employees.Where(x => x.FirstName.Contains(firstName));
-            }
-            if (!String.IsNullOrEmpty(lastName))
-            {
-                employees = employees.Where(x => x.LastName.Contains(lastName));
-            }
-            if (!String.IsNullOrEmpty(middleName))
-            {
-                employees = employees.Where(x => x.MiddleName.Contains(middleName));
-            }
+            
+
+            firstName = GetStringFromSession("firstName", firstName);
+            employees = employees.Where(x => x.FirstName.Contains(firstName));
+
+            lastName = GetStringFromSession("lastName", lastName);
+            employees = employees.Where(x => x.LastName.Contains(lastName));
+
+            middleName = GetStringFromSession("middleName", middleName);
+            employees = employees.Where(x => x.MiddleName.Contains(middleName));
+            
 
             switch (sortOrder)
             {
