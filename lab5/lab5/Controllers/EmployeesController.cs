@@ -19,8 +19,8 @@ namespace lab5.Controllers
             _context = cafeContext;
         }
         [Authorize]
-        public IActionResult Index(string firstName, string lastName, string middleName, int? profession,
-                                    int page = 1, EmployeeSortState sortOrder = EmployeeSortState.AgeAsc)
+        public IActionResult Index(int? profession, int page = 1, 
+                            EmployeeSortState sortOrder = EmployeeSortState.AgeAsc)
         {
             IQueryable<Employee> employees;
             if(!_cache.TryGetValue(_key, out employees))
@@ -41,16 +41,17 @@ namespace lab5.Controllers
             if (profession != -1)
                 employees = employees.Where(x => x.Profession.Id == profession);
             
-
-            firstName = GetStringFromSession("firstName", firstName);
+            string firstName = GetStringFromSession(HttpContext, "firstName", "firstName");
+            HttpContext.Session.SetString("firstName", firstName);
             employees = employees.Where(x => x.FirstName.Contains(firstName));
 
-            lastName = GetStringFromSession("lastName", lastName);
+            string lastName = GetStringFromSession(HttpContext, "lastName", "lastName");
+            HttpContext.Session.SetString("lastName", lastName);
             employees = employees.Where(x => x.LastName.Contains(lastName));
 
-            middleName = GetStringFromSession("middleName", middleName);
+            string middleName = GetStringFromSession(HttpContext, "middleName", "middleName");
+            HttpContext.Session.SetString("middleName", middleName);
             employees = employees.Where(x => x.MiddleName.Contains(middleName));
-            
 
             switch (sortOrder)
             {

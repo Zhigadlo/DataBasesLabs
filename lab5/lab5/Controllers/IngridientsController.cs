@@ -18,7 +18,7 @@ namespace lab5.Controllers
         }
 
         [Authorize]
-        public IActionResult Index(int? ingridient, string name, int page = 1,
+        public IActionResult Index(int? ingridient, int page = 1,
                                     IngridientSortState sortOrder = IngridientSortState.NameAsc)
         {
             IQueryable<Ingridient> ingridients;
@@ -40,7 +40,8 @@ namespace lab5.Controllers
             if (ingridient != -1)
                 ingridients = ingridients.Where(x => x.Id == ingridient);
 
-            name = GetStringFromSession("ingridintname", name);
+            string name = GetStringFromSession(HttpContext, "ingridientname", "name");
+            HttpContext.Session.SetString("ingridientname", name);
             ingridients = ingridients.Where(x => x.Name.Contains(name));
 
             switch (sortOrder)
