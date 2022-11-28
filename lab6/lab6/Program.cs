@@ -1,3 +1,4 @@
+using lab6.Middleware;
 using lab6.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,12 +13,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<InitializeDataMiddleware>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseHttpsRedirection();
 
