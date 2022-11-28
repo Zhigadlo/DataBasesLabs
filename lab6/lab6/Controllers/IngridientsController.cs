@@ -52,13 +52,12 @@ namespace lab6.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(int id, Ingridient ingridient)
+        public IActionResult Update(Ingridient ingridient)
         {
-            if (_context.Ingridients.Count(i => i.Id == id) == 0)
-                return NotFound();
+            if (_context.Ingridients.Count(i => i.Id == ingridient.Id) == 0)
+                return BadRequest();
             else
             {
-                ingridient.Id = id;
                 _context.Ingridients.Update(ingridient);
                 _context.SaveChanges();
                 return Ok();
