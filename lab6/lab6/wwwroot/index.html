@@ -1,0 +1,256 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <h2>Employee list</h2>
+    <form name="employeeForm">
+        <input type="hidden" name="id" value="0" />
+        <div class="form-group col-md-5">
+            <label for="FirstName">First name:</label>
+            <input class="form-control" name="FirstName" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="LastName">Last name:</label>
+            <input class="form-control" name="LastName" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="MiddleName">Middle name:</label>
+            <input class="form-control" name="MiddleName" />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="Age">Age:</label>
+            <input class="form-control" name="Age" type="number" min=18 max=65 />
+        </div>
+        <div class="form-group col-md-5">
+            <label for="Education">Education:</label>
+            <input class="form-control" name="Education"/>
+        </div>
+        <div class="form-group col-md-5">
+            <label for="ProfessionId">ProfessionId:</label>
+            <input class="form-control" name="ProfessionId" type="number" />
+        </div>
+        <div>
+            <select name="Profession">   
+            </select>
+            <label for="Profession">Profession</label>
+        </div>
+        <div class="panel-body">
+            <button type="submit" id="submit" class="btn btn-primary">Save</button>
+            <a id="reset" class="btn btn-primary">Clean</a>
+        </div>
+    </form>
+    <table class="table table-condensed table-striped  col-md-6">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Middle name</th>
+                <th>Age</th>
+                <th>Education</th>
+                <th>ProfessionId</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div>2022 © web api lab</div>
+    <script>
+        // Получение всех пользователей
+        async function GetEmployees() {
+            // отправляет запрос и получаем ответ
+            const response = await fetch("/api/Employees", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            // если запрос прошел нормально
+            if (response.ok === true) {
+                // получаем данные
+                const employees = await response.json();
+                let rows = document.querySelector("tbody");
+                employees.forEach(e => {
+                    // добавляем полученные элементы в таблицу
+                    rows.append(row(e));
+                });
+            }
+        }
+        // Получение одного работника
+        async function GetEmployee(id) {
+            const response = await fetch("/api/Employees/" + id, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                const employee = await response.json();
+                const form = document.forms["employeeForm"];
+                form.elements["id"].value = employee.id;
+                form.elements["FirstName"].value = employee.firstName;
+                form.elements["LastName"].value = employee.lastName;
+                form.elements["MiddleName"].value = employee.middleName;
+                form.elements["Age"].value = employee.age;
+                form.elements["Education"].value = employee.education;
+                form.elements["ProfessionId"].value = employee.professionId
+            }
+        }
+        // Добавление пользователя
+        async function CreateEmployee(firstName, lastName, middleName, age, education, professionId) {
+            console.log(firstName)
+            console.log(lastName)
+            console.log(middleName)
+            console.log(age)
+            console.log(education)
+            console.log(professionId)
+            const response = await fetch("/api/Employees", {
+                method: "POST",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    middleName: middleName,
+                    age: parseInt(age, 10),
+                    education: education,
+                    professionId: parseInt(professionId, 10)
+                })
+            });
+            if (response.ok === true) {
+                const employee = await response.json();
+                reset();
+                document.querySelector("tbody").append(row(employee));
+            }
+        }
+        // Изменение пользователя
+        async function EditEmployee(employeeId, newFirstName, newLastName, newMiddleName, newAge, newEducation, newProfessionId) {
+            const response = await fetch("api/Employees", {
+                method: "PUT",
+                headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: parseInt(employeeId),
+                    firstName: newFirstName,
+                    lastName: newLastName,
+                    middleName: newMiddleName,
+                    age: parseInt(newAge),
+                    education: newEducation,
+                    professionId: parseInt(newProfessionId)
+                })
+            });
+            if (response.ok === true) {
+                const employee = await response.json();
+                reset();
+                document.querySelector("tr[data-rowid='" + employee.id + "']").replaceWith(row(employee));
+            }
+        }
+        // Удаление пользователя
+        async function DeleteEmployee(id) {
+            console.log(id)
+            const response = await fetch("api/Employees/" + id, {
+                method: "DELETE",
+                headers: { "Accept": "application/json" }
+            });
+            if (response.ok === true) {
+                document.querySelector("tr[data-rowid='" + id + "']").remove();
+            }
+        }
+
+        // сброс формы
+        function reset() {
+            const form = document.forms["employeeForm"];
+            form.reset();
+            form.elements["id"].value = 0;
+        }
+        // создание строки для таблицы
+        function row(employee) {
+
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", employee.id);
+
+            const idTd = document.createElement("td");
+            idTd.append(employee.id);
+            tr.append(idTd);
+
+            const firstNameTd = document.createElement("td");
+            firstNameTd.append(employee.firstName);
+            tr.append(firstNameTd);
+
+            const lastNameTd = document.createElement("td");
+            lastNameTd.append(employee.lastName);
+            tr.append(lastNameTd);
+
+            const middleNameTd = document.createElement("td");
+            middleNameTd.append(employee.middleName);
+            tr.append(middleNameTd);
+
+            const ageTd = document.createElement("td");
+            ageTd.append(employee.age);
+            tr.append(ageTd);
+
+            const educationTd = document.createElement("td");
+            educationTd.append(employee.education);
+            tr.append(educationTd);
+
+            const professionId = document.createElement("td");
+            professionId.append(employee.professionId);
+            tr.append(professionId);
+
+            const linksTd = document.createElement("td");
+
+            const editLink = document.createElement("a");
+            editLink.setAttribute("data-id", employee.id);
+            editLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            editLink.append("Change");
+            editLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                GetEmployee(employee.id);
+            });
+            linksTd.append(editLink);
+
+            const removeLink = document.createElement("a");
+            removeLink.setAttribute("data-id", employee.id);
+            removeLink.setAttribute("style", "cursor:pointer;padding:15px;");
+            removeLink.append("Delete");
+            removeLink.addEventListener("click", e => {
+
+                e.preventDefault();
+                DeleteEmployee(employee.id);
+            });
+
+            linksTd.append(removeLink);
+            tr.appendChild(linksTd);
+
+            return tr;
+        }
+        // сброс значений формы
+        document.getElementById("reset").click(function (e) {
+
+            e.preventDefault();
+            reset();
+        })
+
+        // отправка формы
+        document.forms["employeeForm"].addEventListener("submit", e => {
+            e.preventDefault();
+            const form = document.forms["employeeForm"]
+            const id = form.elements["id"].value;
+            const firstName = form.elements["FirstName"].value;
+            const lastName = form.elements["LastName"].value;
+            const middleName = form.elements["MiddleName"].value;
+            const age = form.elements["Age"].value;
+            const education = form.elements["Education"].value;
+            const professionId = form.elements["ProfessionId"].value;
+            if (id == 0)
+                CreateEmployee(firstName, lastName, middleName, age, education, professionId);
+            else
+                EditEmployee(id, firstName, lastName, middleName, age, education, professionId);
+        });
+
+        // загрузка пользователей
+        GetEmployees();
+
+    </script>
+</body>
+</html>

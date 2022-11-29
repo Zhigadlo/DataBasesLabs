@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace lab6.Controllers
 {
-    [Route("api/[Controller]")]
+    [Route("api/Employees")]
     public class EmployeesController : Controller
     {
         private CafeContext _context;
@@ -24,7 +24,7 @@ namespace lab6.Controllers
             return _context.Employees.FirstOrDefault(e => e.Id == id);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id) 
         { 
             Employee? employee = _context.Employees.FirstOrDefault(e => e.Id == id);
@@ -41,9 +41,10 @@ namespace lab6.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Employee employee)
+        public IActionResult Add([FromBody]Employee employee)
         {
-            if(employee == null)
+            if(employee == null || employee.ProfessionId == 0 || employee.FirstName == null 
+                || employee.LastName == null || employee.Age == 0)
                 return BadRequest();
             else
             {
@@ -54,7 +55,7 @@ namespace lab6.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update(Employee employee)
+        public IActionResult Update([FromBody] Employee employee)
         {
             if(_context.Employees.Count(e => e.Id == employee.Id) == 0)
                 return BadRequest();

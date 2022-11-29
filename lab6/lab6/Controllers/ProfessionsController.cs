@@ -3,33 +3,33 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace lab6.Controllers
 {
-    [Route("api/[controller]")]
-    public class IngridientsController : Controller
+    [Route("api/Professions")]
+    public class ProfessionsController : Controller
     {
         private CafeContext _context;
 
-        public IngridientsController(CafeContext context)
+        public ProfessionsController(CafeContext context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public IEnumerable<Ingridient> Get()
+        public IEnumerable<Profession> Get()
         {
-            return _context.Ingridients.AsEnumerable();
+            return _context.Professions.AsEnumerable();
         }
         [HttpGet("{id}")]
-        public Ingridient? Get(int id)
+        public Profession? Get(int id)
         {
-            return _context.Ingridients.FirstOrDefault(i => i.Id == id);
+            return _context.Professions.FirstOrDefault(i => i.Id == id);
         }
 
         [HttpPost]
-        public IActionResult Add(Ingridient ingridient)
+        public IActionResult Add(Profession profession)
         {
-            if (ingridient != null)
+            if (profession != null)
             {
-                _context.Ingridients.Add(ingridient);
+                _context.Professions.Add(profession);
                 _context.SaveChanges();
                 return Ok();
             }
@@ -40,25 +40,25 @@ namespace lab6.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            Ingridient? ingridient = _context.Ingridients.FirstOrDefault(i => i.Id == id);
-            if (ingridient == null)
+            Profession? profession = _context.Professions.FirstOrDefault(i => i.Id == id);
+            if (profession == null)
                 return NotFound();
             else
             {
-                _context.Ingridients.Remove(ingridient);
+                _context.Professions.Remove(profession);
                 _context.SaveChanges();
                 return Ok();
             }
         }
 
         [HttpPut]
-        public IActionResult Update(Ingridient ingridient)
+        public IActionResult Update(Profession profession)
         {
-            if (_context.Ingridients.Count(i => i.Id == ingridient.Id) == 0)
+            if (_context.Ingridients.Count(i => i.Id == profession.Id) == 0)
                 return BadRequest();
             else
             {
-                _context.Ingridients.Update(ingridient);
+                _context.Professions.Update(profession);
                 _context.SaveChanges();
                 return Ok();
             } 
