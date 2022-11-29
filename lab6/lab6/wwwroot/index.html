@@ -29,10 +29,6 @@
             <label for="Education">Education:</label>
             <input class="form-control" name="Education"/>
         </div>
-        <div class="form-group col-md-5">
-            <label for="ProfessionId">ProfessionId:</label>
-            <input class="form-control" name="ProfessionId" type="number" />
-        </div>
         <div>
             <select name="Profession">   
             </select>
@@ -61,6 +57,25 @@
     </table>
     <div>2022 © web api lab</div>
     <script>
+        async function CreateProfessionList(){
+            var selectList = employeeForm.Profession;
+            //document.getElementsByName("Profession");
+            const response = await fetch("/api/Professions", {
+                method: "GET",
+                headers: { "Accept": "application/json"}
+            });
+            if(response.ok === true){
+                const professions = await response.json();
+                professions.forEach(p => {
+                    var option = document.createElement("option");
+                    option.text = p.name;
+                    console.log(p)
+                    option.value = parseInt(p.id);
+                    selectList.appendChild(option)
+                })
+            }
+            
+        }
         // Получение всех пользователей
         async function GetEmployees() {
             // отправляет запрос и получаем ответ
@@ -94,9 +109,11 @@
                 form.elements["MiddleName"].value = employee.middleName;
                 form.elements["Age"].value = employee.age;
                 form.elements["Education"].value = employee.education;
-                form.elements["ProfessionId"].value = employee.professionId
+                form.elements["Profession"].value = employee.professionId;
+                console.log(employee.professionId);
             }
         }
+
         // Добавление пользователя
         async function CreateEmployee(firstName, lastName, middleName, age, education, professionId) {
             console.log(firstName)
@@ -139,9 +156,8 @@
                 })
             });
             if (response.ok === true) {
-                const employee = await response.json();
                 reset();
-                document.querySelector("tr[data-rowid='" + employee.id + "']").replaceWith(row(employee));
+                document.querySelector("tr[data-rowid='" + employeeId + "']").replaceWith(row(employee));
             }
         }
         // Удаление пользователя
@@ -156,13 +172,12 @@
             }
         }
 
-        // сброс формы
         function reset() {
             const form = document.forms["employeeForm"];
             form.reset();
             form.elements["id"].value = 0;
         }
-        // создание строки для таблицы
+        
         function row(employee) {
 
             const tr = document.createElement("tr");
@@ -192,9 +207,17 @@
             educationTd.append(employee.education);
             tr.append(educationTd);
 
-            const professionId = document.createElement("td");
-            professionId.append(employee.professionId);
-            tr.append(professionId);
+            var professionList = employeeForm.Profession;
+            const profession = document.createElement("td");
+            var text = "";
+            for (var i = 0; i < professionList.length; i++) {
+                var option = professionList.options[i];
+                if (parseInt(option.value) === parseInt(employee.professionId)) {
+                    text = option.text;
+                }
+            }
+            profession.append(text);
+            tr.append(profession);
 
             const linksTd = document.createElement("td");
 
@@ -224,14 +247,13 @@
 
             return tr;
         }
-        // сброс значений формы
+        
         document.getElementById("reset").click(function (e) {
 
             e.preventDefault();
             reset();
         })
 
-        // отправка формы
         document.forms["employeeForm"].addEventListener("submit", e => {
             e.preventDefault();
             const form = document.forms["employeeForm"]
@@ -241,14 +263,14 @@
             const middleName = form.elements["MiddleName"].value;
             const age = form.elements["Age"].value;
             const education = form.elements["Education"].value;
-            const professionId = form.elements["ProfessionId"].value;
+            const professionId = form.elements["Profession"].value;
             if (id == 0)
                 CreateEmployee(firstName, lastName, middleName, age, education, professionId);
             else
                 EditEmployee(id, firstName, lastName, middleName, age, education, professionId);
         });
-
-        // загрузка пользователей
+        
+        CreateProfessionList();
         GetEmployees();
 
     </script>

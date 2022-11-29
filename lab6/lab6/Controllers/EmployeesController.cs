@@ -50,7 +50,7 @@ namespace lab6.Controllers
             {
                 _context.Employees.Add(employee);
                 _context.SaveChanges();
-                return Ok();
+                return Ok(employee);
             }
         }
 
