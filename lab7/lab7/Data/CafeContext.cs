@@ -2,7 +2,7 @@
 
 namespace lab7.Data
 {
-    partial class CafeContext : DbContext
+    public class CafeContext : DbContext
     {
         public CafeContext()
         {
@@ -154,9 +154,8 @@ namespace lab7.Data
                     .HasMaxLength(20)
                     .IsUnicode(false);
             });
-            OnModelCreatingPartial(modelBuilder);
+            base.OnModelCreating(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

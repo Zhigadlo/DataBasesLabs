@@ -1,15 +1,16 @@
 using lab7.Data;
+using lab7.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSqlServer<CafeContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddDbContext<CafeContext>();
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddScoped<EmployeeService>();
 
 var app = builder.Build();
 
