@@ -16,12 +16,12 @@ namespace lab7.Services
             return await Task.FromResult(_context.Employees.Include(e => e.Profession).ToList());
         }
 
-        public void Delete(int id)
+        public Employee? Delete(int id)
         {
-            _context.Employees.Remove(_context.Employees.First(e => e.Id == id));
+            Employee? employee = _context.Employees.First(e => e.Id == id);
+            _context.Employees.Remove(employee);
             _context.SaveChanges();
+            return employee;
         }
-
-        //public void Create(string firstName, string lastName)
     }
 }

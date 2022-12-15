@@ -1,0 +1,33 @@
+﻿@page "/employee/delete/{id:int}"
+@inject EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+@if(employee != null)
+{
+    <h1>Employee @employee.FirstName @employee.LastName @employee.MiddleName has deleted</h1>
+}
+else
+{
+    <h1>Employee does not exist</h1>
+}
+
+<button @onclick="ToEmployeeList">Back</button>
+@functions{
+    [Parameter]
+    public int Id { get; set; }
+
+    private Employee? employee;
+
+    protected override Task OnInitializedAsync()
+    {
+        employee = EmployeeService.Delete(Id);
+        return base.OnInitializedAsync();
+    }
+
+    private void ToEmployeeList()
+    {
+        NavigationManager.NavigateTo("/employees");
+    }
+}

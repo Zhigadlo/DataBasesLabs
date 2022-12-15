@@ -1,5 +1,6 @@
 ﻿@page "/employees"
 @inject EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
 @using Data
 @using Services
 
@@ -27,19 +28,16 @@ else
         <tbody>
             @foreach (var employee in employees)
             {
-                @if(displayPrompt[GetIndexOfPrompt(employee.Id)])
-                {
-                    <tr>
-                        <td>@employee.FirstName</td>
-                        <td>@employee.LastName</td>
-                        <td>@employee.MiddleName</td>
-                        <td>@employee.Age</td>
-                        <td>@employee.Education</td>
-                        <td>@employee.Profession.Name</td>
-                        <td></td>
-                        <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
-                    </tr>
-                }
+                <tr>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.MiddleName</td>
+                    <td>@employee.Age</td>
+                    <td>@employee.Education</td>
+                    <td>@employee.Profession.Name</td>
+                    <td></td>
+                    <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
+                </tr>
             }
         </tbody>
     </table>
@@ -49,23 +47,14 @@ else
 
 @code{
     private List<Employee>? employees;
-    private List<bool> displayPrompt;
 
     protected override async Task OnInitializedAsync()
     {
-        displayPrompt = new List<bool>();
         employees = await EmployeeService.GetAll();
-        employees.ForEach(e => displayPrompt.Add(true));
-    }
-
-    private int GetIndexOfPrompt(int id)
-    {
-        return employees.IndexOf(employees.First(e => e.Id == id));
     }
 
     private void Delete(int id)
     {
-        EmployeeService.Delete(id);
-        displayPrompt[GetIndexOfPrompt(id)] = false;
+        NavigationManager.NavigateTo("/employee/delete/" + id);
     }
 }
