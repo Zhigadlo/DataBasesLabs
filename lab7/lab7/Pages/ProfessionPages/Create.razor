@@ -1,0 +1,45 @@
+﻿@page "/profession/create/"
+@inject ProfessionService ProfessionService
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Profession updating</PageTitle>
+
+<h1>Profession create</h1>
+<EditForm EditContext="editContext">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="name">Name</label>
+    <InputText id="name" @bind-Value="profession.Name" DisplayName="Name" /><br />
+
+    <button type="submit" @onclick="ProfessionCreate">Create</button>
+</EditForm>
+
+
+@functions {
+    EditContext editContext;
+
+    private Profession profession { get; set; } = new Profession { Name = "profession" };
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(profession);
+    }
+
+    private void ProfessionCreate()
+    {
+        if (editContext.Validate())
+        {
+            ProfessionService.Create(profession);
+            string message = "Profession was successfully created";
+            NavigationManager.NavigateTo($"/professions/successpage/{message}");
+        }
+    }
+
+    private void ToProfessionList()
+    {
+        NavigationManager.NavigateTo("/professions");
+    }
+}

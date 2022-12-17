@@ -4,8 +4,8 @@
 @using Data
 @using Services
 
-<PageTitle>Employees</PageTitle>
-<h1>Employees</h1>
+<PageTitle>Professions</PageTitle>
+<h1>Professions</h1>
 @if (professions == null)
 {
     <p><em>Loading...</em></p>
@@ -48,7 +48,7 @@ else
     {
         var profession = ProfessionService.Delete(id);
         var message = $"Profession {profession.Name} has deleted";
-        NavigationManager.NavigateTo($"/employees/successpage/{message}");
+        NavigationManager.NavigateTo($"/professions/successpage/{message}");
     }
 
     private void Update(int id)
