@@ -34,7 +34,7 @@ namespace lab7.Services
         {
             if (employee != null)
             {
-                _context.Update(employee);
+                _context.Employees.Update(employee);
                 _context.SaveChanges();
                 return true;
             }
@@ -46,7 +46,7 @@ namespace lab7.Services
         {
             if (employee != null)
             {
-                _context.Add(employee);
+                _context.Employees.Add(employee);
                 _context.SaveChanges();
                 return true;
             }

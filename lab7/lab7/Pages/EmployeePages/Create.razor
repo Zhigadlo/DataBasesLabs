@@ -31,7 +31,7 @@
 
     <label for="profession">Profession</label>
     <InputSelect id="profession" @bind-Value="employee.ProfessionId">
-        @foreach (var profession in ProfessionService.GetAll())
+        @foreach (var profession in professions)
         {
             <option value="@profession.Id">@profession.Name</option>
         }
@@ -44,6 +44,8 @@
 @functions {
     EditContext editContext;
 
+    private List<Profession> professions;
+
     private Employee employee { get; set; } = new Employee
         {
             FirstName = "FirstName",
@@ -54,10 +56,10 @@
             ProfessionId = 1
         };
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
+        professions = await ProfessionService.GetAll();
         editContext = new EditContext(employee);
-        base.OnInitialized();
     }
 
     private void EmployeeCreate()

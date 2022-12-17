@@ -1,0 +1,63 @@
+﻿@page "/professions"
+@inject ProfessionService ProfessionService
+@inject NavigationManager NavigationManager
+@using Data
+@using Services
+
+<PageTitle>Employees</PageTitle>
+<h1>Employees</h1>
+@if (professions == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <button @onclick="Create">Add new profession</button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var profession in professions)
+            {
+                <tr>
+                    <td>@profession.Name</td>
+                    <td><button onclick="@(() => Update(profession.Id))">Update</button></td>
+                    <td><button onclick="@(() => Delete(profession.Id))">Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+    private List<Profession>? professions;
+
+    protected override async Task OnInitializedAsync()
+    {
+        professions = await ProfessionService.GetAll();
+    }
+
+    private void Delete(int id)
+    {
+        var profession = ProfessionService.Delete(id);
+        var message = $"Profession {profession.Name} has deleted";
+        NavigationManager.NavigateTo($"/employees/successpage/{message}");
+    }
+
+    private void Update(int id)
+    {
+        NavigationManager.NavigateTo("/profession/update/" + id);
+    }
+
+    private void Create()
+    {
+        NavigationManager.NavigateTo("/profession/create");
+    }
+}
