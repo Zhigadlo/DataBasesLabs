@@ -12,6 +12,7 @@
 }
 else
 {
+    <button @onclick="Create">Add new employee</button>
     <table class="table">
         <thead>
             <tr>
@@ -61,5 +62,10 @@ else
     private void Update(int id)
     {
         NavigationManager.NavigateTo("/employee/update/" + id);
+    }
+
+    private void Create()
+    {
+        NavigationManager.NavigateTo("/employee/create");
     }
 }

@@ -1,17 +1,17 @@
-﻿@page "/employee/updateresult/{result:bool}"
+﻿@page "/employee/createresult/{result:bool}"
 @inject NavigationManager NavigationManager
 @using Data;
 @using lab7.Services;
 
-<PageTitle>Updating result</PageTitle>
+<PageTitle>Cereating result</PageTitle>
 
 @if (Result)
 {
-    <h1>Employee was successfully updated</h1>
+        <h1>Employee was successfully created</h1>
 }
 else
 {
-    <h1>Employee does not exist or was not updated</h1>
+        <h1>Oops... Something went wrong :(</h1>
 }
 
 <button @onclick="ToEmployeeList">Back</button>
