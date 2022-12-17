@@ -1,0 +1,26 @@
+﻿@page "/employee/updateresult/{result:bool}"
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Updateing result</PageTitle>
+
+@if (Result)
+{
+    <h1>Employee was successfully updated</h1>
+}
+else
+{
+    <h1>Employee does not exist or was not updated</h1>
+}
+
+<button @onclick="ToEmployeeList">Back</button>
+@functions {
+    [Parameter]
+    public bool Result { get; set; }
+
+    private void ToEmployeeList()
+    {
+        NavigationManager.NavigateTo("/employees");
+    }
+}

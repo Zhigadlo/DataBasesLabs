@@ -35,7 +35,7 @@ else
                     <td>@employee.Age</td>
                     <td>@employee.Education</td>
                     <td>@employee.Profession.Name</td>
-                    <td></td>
+                    <td><button onclick="@(() => Update(employee.Id))">Update</button></td>
                     <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
                 </tr>
             }
@@ -56,5 +56,10 @@ else
     private void Delete(int id)
     {
         NavigationManager.NavigateTo("/employee/delete/" + id);
+    }
+
+    private void Update(int id)
+    {
+        NavigationManager.NavigateTo("/employee/update/" + id);
     }
 }

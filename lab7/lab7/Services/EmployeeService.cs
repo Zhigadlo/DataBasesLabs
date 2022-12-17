@@ -23,5 +23,23 @@ namespace lab7.Services
             _context.SaveChanges();
             return employee;
         }
+
+        public Employee? Get(int id)
+        {
+            Employee? employee = _context.Employees.FirstOrDefault(e => e.Id == id);
+            return employee;
+        }
+
+        public bool Update(Employee? employee)
+        {
+            if (employee != null)
+            {
+                _context.Update(employee);
+                _context.SaveChanges();
+                return true;
+            }
+            else
+                return false;
+        }
     }
 }
