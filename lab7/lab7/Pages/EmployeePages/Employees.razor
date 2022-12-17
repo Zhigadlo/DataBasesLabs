@@ -56,7 +56,9 @@ else
 
     private void Delete(int id)
     {
-        NavigationManager.NavigateTo("/employee/delete/" + id);
+        var employee = EmployeeService.Delete(id);
+        var message = $"Employee {employee.FirstName} {employee.LastName} {employee.MiddleName} has deleted";
+        NavigationManager.NavigateTo($"/employees/successpage/{message}");
     }
 
     private void Update(int id)

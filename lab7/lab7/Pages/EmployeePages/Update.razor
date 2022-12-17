@@ -10,7 +10,7 @@
 @if (employee != null)
 {
     <h1>Employee update</h1>
-    <EditForm Model="@employee">
+    <EditForm EditContext="editContext">
         <DataAnnotationsValidator />
         <ValidationSummary/>
         
@@ -45,6 +45,8 @@ else
 }
 
 @functions {
+    EditContext editContext;
+
     [Parameter]
     public int Id { get; set; }
 
@@ -53,13 +55,18 @@ else
     protected override Task OnInitializedAsync()
     {
         employee = EmployeeService.Get(Id);
+        editContext = new EditContext(employee);
         return base.OnInitializedAsync();
     }
 
     private void EmployeeUpdate()
     {
-        var result = EmployeeService.Update(employee);
-        NavigationManager.NavigateTo($"/employee/updateresult/{result}");
+        if (editContext.Validate())
+        {
+            EmployeeService.Update(employee);
+            var message = "Employee was successfully updated";
+            NavigationManager.NavigateTo($"/employees/successpage/{message}");
+        }
     }
 
     private void ToEmployeeList()
