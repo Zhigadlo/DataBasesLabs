@@ -1,4 +1,5 @@
 ﻿using lab7.Data;
+using lab7.Models;
 using lab7.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,13 +17,24 @@ namespace lab7.Services
         {
             _context = context;
         }
-        
-        public string Token(string email, string password)
+
+        public void Create(UserModel userModel)
+        {
+            var user = new User
+            {
+                Login = userModel.Login,
+                PasswordHash = PasswordToHash(userModel.Password)
+            };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+        }
+
+        public string? Token(string email, string password)
         {
             var identity = GetIdentity(email, password);
             if (identity == null)
             {
-                return "Invalid login or password.";
+                return null;
             }
 
             var now = DateTime.UtcNow;
@@ -36,12 +48,21 @@ namespace lab7.Services
                     signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var response = new
-            {
-                access_token = encodedJwt
-            };
+            //var response = new
+            //{
+            //    access_token = encodedJwt
+            //};
 
-            return response.ToString();
+            return encodedJwt;//response.ToString();
+        }
+
+        public bool Contains(Func<User, bool> predicate)
+        {
+            var isExist = _context.Users.FirstOrDefault(predicate);
+            if (isExist == null)
+                return false;
+            else
+                return true;
         }
         private ClaimsIdentity GetIdentity(string login, string password)
         {

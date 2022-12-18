@@ -1,0 +1,45 @@
+﻿@page "/registration"
+@using System.ComponentModel.DataAnnotations;
+@using lab7.Data;
+@using lab7.Models;
+@using lab7.Services;
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+
+<PageTitle>Registration</PageTitle>
+
+<h1>Registration</h1>
+<EditForm EditContext="editContext">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label for="login">Login</label>
+    <InputText id="login" @bind-Value="user.Login" DisplayName="Login" /><br />
+
+    <label for="password">Password</label>
+    <InputText id="password" @bind-Value="user.Password" DisplayName="Password" /><br />
+    
+    <button type="submit" @onclick="UserRegistration">Registrate</button>
+</EditForm>
+
+@code{
+    private UserModel user = new UserModel();
+
+    EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(user);
+        base.OnInitialized();
+    }
+
+    private void UserRegistration()
+    {
+        if(editContext.Validate() && !UserService.Contains(u => u.Login == user.Login))
+        {
+            UserService.Create(user);
+            var message = "You are successfuly registred. Now you can log in.";
+            NavigationManager.NavigateTo($"/users/successpage/{message}");
+        }
+    }
+}

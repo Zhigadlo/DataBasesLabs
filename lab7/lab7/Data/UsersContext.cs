@@ -5,7 +5,7 @@ namespace lab7.Data
     public class UsersContext : DbContext
     {
         public DbSet<User> Users { get; set; }
-        public UsersContext(DbContextOptions<CafeContext> options)
+        public UsersContext(DbContextOptions<UsersContext> options)
             : base(options)
         {
             Database.EnsureCreated();
@@ -22,7 +22,7 @@ namespace lab7.Data
                     .IsUnicode(false);
 
                 entity.Property(e => e.PasswordHash)
-                    .HasMaxLength(20)
+                    .HasMaxLength(100)
                     .IsUnicode(false);
             });
 
