@@ -1,0 +1,80 @@
+﻿@page "/orders"
+@inject EmployeeService EmployeeService
+@inject OrderService OrderService
+@inject NavigationManager NavigationManager
+@using Data
+@using Microsoft.AspNetCore.Identity;
+@using Services
+
+<PageTitle>Orders</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <h1>Orders</h1>
+
+        @if (orders == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <button @onclick="Create">Add new employee</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Order date</th>
+                        <th>Customer name</th>
+                        <th>Customer phone number</th>
+                        <th>Payment method</th>
+                        <th>Is completed</th>
+                        <th>Employee</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in orders)
+                    {
+                        <tr>
+                            <td>@employee.OrderDate</td>
+                            <td>@employee.CustomerName</td>
+                            <td>@employee.CustomerPhoneNumber</td>
+                            <td>@employee.PaymentMethod</td>
+                            <td>@employee.IsCompleted</td>
+                            <td>@(employee.Employee.FirstName + " " + employee.Employee.LastName)</td>
+                            <td><button onclick="@(() => Update(employee.Id))">Update</button></td>
+                            <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+    private IEnumerable<Order>? orders;
+
+    protected override void OnInitialized()
+    {
+        orders = OrderService.GetAll();
+    }
+
+    private void Delete(int id)
+    {
+        var order = OrderService.Delete(id);
+        var message = "Order has deleted";
+        NavigationManager.NavigateTo($"/orders/successpage/{message}");
+    }
+
+    private void Update(int id)
+    {
+        NavigationManager.NavigateTo("/order/update/" + id);
+    }
+
+    private void Create()
+    {
+        NavigationManager.NavigateTo("/order/create");
+    }
+}

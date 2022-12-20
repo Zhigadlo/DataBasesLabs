@@ -1,0 +1,20 @@
+﻿@page "/orders/successpage/{message}"
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Success page</PageTitle>
+
+<h1>@Message</h1>
+
+<button @onclick="ToOrderList">Back</button>
+@functions {
+    [Parameter]
+    public string Message { get; set; }
+
+
+    private void ToOrderList()
+    {
+        NavigationManager.NavigateTo("/orders");
+    }
+}

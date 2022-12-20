@@ -42,16 +42,16 @@ namespace lab7.Services
                 return false;
         }
 
-        public bool Create(Employee? employee)
+        public int Create(Employee? employee)
         {
             if (employee != null)
             {
                 _context.Employees.Add(employee);
                 _context.SaveChanges();
-                return true;
+                return employee.Id;
             }
             else
-                return false;
+                return -1;
         }
     }
 }

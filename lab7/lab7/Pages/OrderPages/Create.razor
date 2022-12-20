@@ -1,0 +1,80 @@
+﻿@page "/order/create/"
+@inject OrderService OrderService
+@inject EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Order creating</PageTitle>
+<AuthorizeView>
+    <Authorized Context="Create">
+        <h1>Order create</h1>
+        <EditForm EditContext="editContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label for="customerName">Customer name</label>
+            <InputText id="customerName" @bind-Value="order.CustomerName" DisplayName="Customer name" /><br />
+
+            <label for="customerPhoneNumber">Customer phone number</label>
+            <InputText id="customerPhoneNumber" @bind-Value="order.CustomerPhoneNumber" /><br />
+
+            <label for="orderDate">Order date</label>
+            <InputDate id="orderDate" @bind-Value="order.OrderDate" /><br />
+
+            <label for="paymentMethod">Payment method</label>
+            <InputSelect id="paymentMethod" @bind-Value="order.PaymentMethod">
+                <option value="0" selected>cash</option>
+                <option value="1">card</option>
+            </InputSelect><br />
+
+            <label for="employee">Employee</label>
+            <InputSelect id="employee" @bind-Value="order.EmployeeId">
+                @foreach (var employee in employees)
+                {
+                    <option value="@employee.Id">@(employee.FirstName + " " + employee.LastName)</option>
+                }
+            </InputSelect><br />
+
+            <button type="submit" @onclick="OrderCreate">Create</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
+@functions {
+    private EditContext editContext;
+
+    private List<Employee>? employees;
+
+    private Order order { get; set; } = new Order
+        {
+            OrderDate = DateTime.Now,
+            CustomerName = "CustomerName",
+            CustomerPhoneNumber = "+375330000000",
+            PaymentMethod = 0,
+            IsCompleted = 0
+        };
+
+    protected async override Task OnInitializedAsync()
+    {
+        employees = await EmployeeService.GetAll();
+        editContext = new EditContext(order);
+    }
+
+    private void OrderCreate()
+    {
+        if (editContext.Validate())
+        {
+            OrderService.Create(order);
+            string message = "Order was successfully created";
+            NavigationManager.NavigateTo($"/orders/successpage/{message}");
+        }
+    }
+
+    private void ToOrderList()
+    {
+        NavigationManager.NavigateTo("/orders");
+    }
+}

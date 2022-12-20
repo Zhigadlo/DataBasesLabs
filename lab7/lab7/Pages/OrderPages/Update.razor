@@ -1,0 +1,91 @@
+﻿@page "/order/update/{id:int}"
+@inject EmployeeService EmployeeService
+@inject OrderService OrderService
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Order updating</PageTitle>
+<AuthorizeView>
+    <Authorized Context="Update">
+        @if (order != null)
+        {
+            <h1>Employee update</h1>
+            <EditForm EditContext="editContext">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <label for="customerName">Customer name</label>
+                <InputText id="customerName" @bind-Value="order.CustomerName" DisplayName="Customer name" /><br />
+
+                <label for="customerPhoneNumber">Customer phone number</label>
+                <InputText id="customerPhoneNumber" @bind-Value="order.CustomerPhoneNumber" /><br />
+
+                <label for="orderDate">Order date</label>
+                <InputDate id="orderDate" @bind-Value="order.OrderDate" /><br />
+
+                <label for="paymentMethod">Payment method</label>
+                <InputSelect id="paymentMethod" @bind-Value="order.PaymentMethod">
+                    <option value="0" selected>cash</option>
+                    <option value="1">card</option>
+                </InputSelect><br />
+
+                <label for="isCompleted">Is completed</label>
+                <InputSelect id="isCompleted" @bind-Value="order.IsCompleted">
+                    <option value="0">False</option>
+                    <option value="1">True</option>
+                </InputSelect><br />
+
+                <label for="employee">Employee</label>
+                <InputSelect id="employee" @bind-Value="order.EmployeeId">
+                    @foreach (var employee in employees)
+                    {
+                        <option value="@employee.Id">@(employee.FirstName + " " + employee.LastName)</option>
+                    }
+                </InputSelect><br />
+
+                <button type="submit" @onclick="OrderUpdate">Create</button>
+            </EditForm>
+        }
+        else
+        {
+            <h1>Employee does not exist</h1>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+
+</AuthorizeView>
+
+@functions {
+    EditContext editContext;
+    private List<Employee> employees;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Order? order;
+
+    protected async override Task OnInitializedAsync()
+    {
+        employees = await EmployeeService.GetAll();
+        order = OrderService.Get(Id);
+        editContext = new EditContext(order);
+    }
+
+    private void OrderUpdate()
+    {
+        if (editContext.Validate())
+        {
+            OrderService.Update(order);
+            var message = "Order was successfully updated";
+            NavigationManager.NavigateTo($"/orders/successpage/{message}");
+        }
+    }
+
+    private void ToOrderList()
+    {
+        NavigationManager.NavigateTo("/orders");
+    }
+}
