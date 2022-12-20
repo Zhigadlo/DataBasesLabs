@@ -5,24 +5,31 @@
 @using lab7.Services;
 
 <PageTitle>Profession updating</PageTitle>
+<AuthorizeView>
+    <Authorized Context="Update">
+        @if (profession != null)
+        {
+        <h1>Profession update</h1>
+        <EditForm EditContext="editContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-@if (profession != null)
-{
-    <h1>Profession update</h1>
-    <EditForm EditContext="editContext">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="profession.Name" /><br />
 
-        <label for="name">Name</label>
-        <InputText id="name" @bind-Value="profession.Name" /><br />
+            <button type="submit" @onclick="ProfessionUpdate">Update</button>
+        </EditForm>
+        }
+        else
+        {
+        <h1>Profession does not exist</h1>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
 
-        <button type="submit" @onclick="ProfessionUpdate">Update</button>
-    </EditForm>
-}
-else
-{
-    <h1>Profession does not exist</h1>
-}
 
 @functions {
     EditContext editContext;

@@ -5,17 +5,25 @@
 @using lab7.Services;
 
 <PageTitle>Profession updating</PageTitle>
+<AuthorizeView>
+    <Authorized Context="Create">
+        <h1>Profession create</h1>
+        <EditForm EditContext="editContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-<h1>Profession create</h1>
-<EditForm EditContext="editContext">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="profession.Name" DisplayName="Name" /><br />
 
-    <label for="name">Name</label>
-    <InputText id="name" @bind-Value="profession.Name" DisplayName="Name" /><br />
+            <button type="submit" @onclick="ProfessionCreate">Create</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+    
+</AuthorizeView>
 
-    <button type="submit" @onclick="ProfessionCreate">Create</button>
-</EditForm>
 
 
 @functions {

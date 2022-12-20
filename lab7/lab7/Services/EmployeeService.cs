@@ -6,12 +6,12 @@ namespace lab7.Services
     public class EmployeeService
     {
         private CafeContext _context;
-        public EmployeeService(CafeContext context) 
+        public EmployeeService(CafeContext context)
         {
             _context = context;
         }
 
-        public async Task<List<Employee>?> GetAll() 
+        public async Task<List<Employee>?> GetAll()
         {
             return await Task.FromResult(_context.Employees.Include(e => e.Profession).ToList());
         }

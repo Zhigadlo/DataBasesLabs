@@ -2,50 +2,56 @@
 @inject EmployeeService EmployeeService
 @inject NavigationManager NavigationManager
 @using Data
+@using Microsoft.AspNetCore.Identity;
 @using Services
 
 <PageTitle>Employees</PageTitle>
-<h1>Employees</h1>
-@if (employees == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <button @onclick="Create">Add new employee</button>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>FirstName</th>
-                <th>LastName</th>
-                <th>MiddleName</th>
-                <th>Age</th>
-                <th>Education</th>
-                <th>Profession</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var employee in employees)
-            {
-                <tr>
-                    <td>@employee.FirstName</td>
-                    <td>@employee.LastName</td>
-                    <td>@employee.MiddleName</td>
-                    <td>@employee.Age</td>
-                    <td>@employee.Education</td>
-                    <td>@employee.Profession.Name</td>
-                    <td><button onclick="@(() => Update(employee.Id))">Update</button></td>
-                    <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<AuthorizeView>
+    <Authorized>
+        <h1>Employees</h1>
 
-
-
+        @if (employees == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <button @onclick="Create">Add new employee</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>FirstName</th>
+                        <th>LastName</th>
+                        <th>MiddleName</th>
+                        <th>Age</th>
+                        <th>Education</th>
+                        <th>Profession</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in employees)
+                    {
+                        <tr>
+                            <td>@employee.FirstName</td>
+                            <td>@employee.LastName</td>
+                            <td>@employee.MiddleName</td>
+                            <td>@employee.Age</td>
+                            <td>@employee.Education</td>
+                            <td>@employee.Profession.Name</td>
+                            <td><button onclick="@(() => Update(employee.Id))">Update</button></td>
+                            <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
 @code{
     private List<Employee>? employees;
 
