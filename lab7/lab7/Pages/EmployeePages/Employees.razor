@@ -1,0 +1,79 @@
+﻿@page "/employees"
+@inject EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+@using Data
+@using Microsoft.AspNetCore.Identity;
+@using Services
+
+<PageTitle>Employees</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <h1>Employees</h1>
+
+        @if (employees == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <button @onclick="Create">Add new employee</button>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>FirstName</th>
+                        <th>LastName</th>
+                        <th>MiddleName</th>
+                        <th>Age</th>
+                        <th>Education</th>
+                        <th>Profession</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var employee in employees)
+                    {
+                        <tr>
+                            <td>@employee.FirstName</td>
+                            <td>@employee.LastName</td>
+                            <td>@employee.MiddleName</td>
+                            <td>@employee.Age</td>
+                            <td>@employee.Education</td>
+                            <td>@employee.Profession.Name</td>
+                            <td><button onclick="@(() => Update(employee.Id))">Update</button></td>
+                            <td><button onclick="@(() => Delete(employee.Id))">Delete</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
+@code{
+    private List<Employee>? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = await EmployeeService.GetAll();
+    }
+
+    private void Delete(int id)
+    {
+        var employee = EmployeeService.Delete(id);
+        var message = $"Employee {employee.FirstName} {employee.LastName} {employee.MiddleName} has deleted";
+        NavigationManager.NavigateTo($"/employees/successpage/{message}");
+    }
+
+    private void Update(int id)
+    {
+        NavigationManager.NavigateTo("/employee/update/" + id);
+    }
+
+    private void Create()
+    {
+        NavigationManager.NavigateTo("/employee/create");
+    }
+}

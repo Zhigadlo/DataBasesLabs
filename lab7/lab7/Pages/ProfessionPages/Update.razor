@@ -1,0 +1,62 @@
+﻿@page "/profession/update/{id:int}"
+@inject ProfessionService ProfessionService
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Profession updating</PageTitle>
+<AuthorizeView>
+    <Authorized Context="Update">
+        @if (profession != null)
+        {
+        <h1>Profession updating</h1>
+        <EditForm EditContext="editContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="profession.Name" /><br />
+
+            <button type="submit" @onclick="ProfessionUpdate">Update</button>
+        </EditForm>
+        }
+        else
+        {
+        <h1>Profession does not exist</h1>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@functions {
+    EditContext editContext;
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Profession? profession;
+
+    protected override void OnInitialized()
+    {
+        profession = ProfessionService.Get(Id);
+        editContext = new EditContext(profession);
+    }
+
+    private void ProfessionUpdate()
+    {
+        if (editContext.Validate())
+        {
+            ProfessionService.Update(profession);
+            var message = "Profession was successfully updated";
+            NavigationManager.NavigateTo($"/professions/successpage/{message}");
+        }
+    }
+
+    private void ToProfessionList()
+    {
+        NavigationManager.NavigateTo("/professions");
+    }
+}

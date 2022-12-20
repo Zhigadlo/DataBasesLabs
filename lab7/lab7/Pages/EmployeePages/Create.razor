@@ -1,0 +1,83 @@
+﻿@page "/employee/create/"
+@inject EmployeeService EmployeeService
+@inject ProfessionService ProfessionService
+@inject NavigationManager NavigationManager
+@using Data;
+@using lab7.Services;
+
+<PageTitle>Employee creating</PageTitle>
+<AuthorizeView>
+    <Authorized Context="Create">
+        <h1>Employee create</h1>
+        <EditForm EditContext="editContext">
+            <DataAnnotationsValidator />
+            <ValidationSummary/>
+
+            <label for="firstName">First name</label>
+            <InputText id="firstName" @bind-Value="employee.FirstName" DisplayName="FirstName"/><br />
+
+            <label for="lastName">Last name</label>
+            <InputText id="lastName" @bind-Value="employee.LastName" /><br />
+
+
+            <label for="middleName">Middle name</label>
+            <InputText id="middleName" @bind-Value="employee.MiddleName" /><br />
+
+            <label for="age">Age</label>
+            <InputNumber id="age" @bind-Value="employee.Age" /><br />
+
+
+            <label for="education">Education</label>
+            <InputText id="education" @bind-Value="employee.Education" /><br />
+
+            <label for="profession">Profession</label>
+            <InputSelect id="profession" @bind-Value="employee.ProfessionId">
+                @foreach (var profession in professions)
+                {
+                    <option value="@profession.Id">@profession.Name</option>
+                }
+            </InputSelect><br />
+
+            <button type="submit" @onclick="EmployeeCreate">Create</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <h1>Access denied</h1>
+    </NotAuthorized>
+</AuthorizeView>
+@functions {
+    private EditContext editContext;
+
+    private List<Profession> professions;
+
+    private Employee employee { get; set; } = new Employee
+        {
+            FirstName = "FirstName",
+            LastName = "LastName",
+            MiddleName = "MiddleName",
+            Age = 18,
+            Education = "Education",
+            ProfessionId = 1
+        };
+
+    protected async override Task OnInitializedAsync()
+    {
+        professions = await ProfessionService.GetAll();
+        editContext = new EditContext(employee);
+    }
+
+    private void EmployeeCreate()
+    {
+        if (editContext.Validate())
+        {
+            EmployeeService.Create(employee);
+            string message = "Employee was successfully created";
+            NavigationManager.NavigateTo($"/employees/successpage/{message}");
+        }
+    }
+
+    private void ToEmployeeList()
+    {
+        NavigationManager.NavigateTo("/employees");
+    }
+}
